@@ -185,6 +185,11 @@ DWORD WINAPI GameThread( LPVOID lpParameter )
     // Create the game object
     GameState *pGameState = reinterpret_cast< GameState* >( lpParameter );
     rl::InitWindow(800, 600, "Piano From Above but raylib");
+    HWND g_hWnd_rl = (HWND)rl::GetWindowHandle();
+    rl::SetWindowState(rl::ConfigFlags::FLAG_WINDOW_UNDECORATED | rl::ConfigFlags::FLAG_WINDOW_MOUSE_PASSTHROUGH);
+    rl::SetWindowPosition(0, 0);
+    SetParent(g_hWnd_rl, g_hWndGfx);
+    SetWindowLongPtr(g_hWnd_rl, GWL_STYLE, GetWindowLongPtr(g_hWnd_rl, GWL_STYLE) | WS_CHILD);
 
     pGameState->SetHWnd( g_hWndGfx );
     pGameState->SetRenderer( pRenderer );
