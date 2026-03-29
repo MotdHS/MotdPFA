@@ -17,7 +17,7 @@ HRESULT Renderer::SetLimitFPS( bool bLimitFPS )
         m_bLimitFPS = bLimitFPS;
         return ResetDevice();
     }
-    return S_OK;
+    return 0L;
 }
 
 D3D9Renderer::~D3D9Renderer()
@@ -112,7 +112,7 @@ HRESULT D3D9Renderer::Init( HWND hWnd, bool bLimitFPS )
     m_bLimitFPS = bLimitFPS;
     m_bIsDeviceValid = true;
 
-    return S_OK;
+    return 0L;
 }
 
 HRESULT D3D9Renderer::RestoreDeviceObjects()
@@ -138,7 +138,7 @@ HRESULT D3D9Renderer::RestoreDeviceObjects()
 
     m_pd3dDevice->SetFVF( SCREEN_VERTEX::FVF );
 
-    return S_OK;
+    return 0L;
 }
 
 HRESULT D3D9Renderer::ResetDeviceIfNeeded()
@@ -151,7 +151,7 @@ HRESULT D3D9Renderer::ResetDeviceIfNeeded()
         if ( FAILED( hr ) )
             return hr;
     }
-    return S_OK;
+    return 0L;
 }
 
 HRESULT D3D9Renderer::ResetDevice()
@@ -178,7 +178,7 @@ HRESULT D3D9Renderer::ResetDevice()
     //MessageBox(NULL, L"a", L"a", 1L);
     rl::SetWindowSize(m_d3dPP.BackBufferWidth, m_d3dPP.BackBufferHeight);
     m_bIsDeviceValid = true;
-    return S_OK;
+    return 0L;
 }
 
 HRESULT D3D9Renderer::Clear( DWORD color )
@@ -212,9 +212,9 @@ HRESULT D3D9Renderer::DrawTextW( const WCHAR *sText, FontSize fsFont, LPRECT rcP
                          fsFont == Large ? m_pLargeFont : m_pMediumFont );
     
     if ( !pFont->DrawTextW( m_pTextSprite, sText, iChars, rcPos, dwFormat, D3DXCOLOR( dwColor ) ) )
-        return E_FAIL;
+        return ((HRESULT)0x80004005L);
     
-    return S_OK;
+    return 0L;
 }
 
 HRESULT D3D9Renderer::DrawTextA( const CHAR *sText, FontSize fsFont, LPRECT rcPos, DWORD dwFormat, DWORD dwColor, INT iChars )
@@ -228,7 +228,7 @@ HRESULT D3D9Renderer::DrawTextA( const CHAR *sText, FontSize fsFont, LPRECT rcPo
     if ( !pFont->DrawTextA( m_pTextSprite, sText, -1, rcPos, dwFormat, D3DXCOLOR( dwColor ) ) )
         return E_FAIL;
     
-    return S_OK;
+    return 0L;
 }
 
 HRESULT D3D9Renderer::EndText()
@@ -263,11 +263,11 @@ HRESULT D3D9Renderer::DrawRect( float x, float y, float cx, float cy,
         x - 0.5f,  y + cy - 0.5f,       0.5f, 1.0f, c4  // bottom left
     };
 
-    rl::DrawRectangleGradientEx(align_rectangle({ x, y, cx, cy }),
-        int_to_color(c1),
-        int_to_color(c4),
-        int_to_color(c3),
-        int_to_color(c2)
+    rl::DrawRectangleGradientEx(rl::AlignRectangle({ x, y, cx, cy }),
+        rl::IntToColor(c1),
+        rl::IntToColor(c4),
+        rl::IntToColor(c3),
+        rl::IntToColor(c2)
     );
     return Blit( vertices, 2 );
 }
@@ -289,8 +289,8 @@ HRESULT D3D9Renderer::DrawSkew( float x1, float y1, float x2, float y2, float x3
         x3 - 0.5f, y3 - 0.5f, 0.5f, 1.0f, c3,
         x4 - 0.5f, y4 - 0.5f, 0.5f, 1.0f, c4
     };
-    draw_triangle_gradient({ x1, y1 }, { x3, y3 }, { x2, y2 }, int_to_color(c1), int_to_color(c3), int_to_color(c2));
-    draw_triangle_gradient({ x1, y1 }, { x4, y4 }, { x3, y3 }, int_to_color(c1), int_to_color(c4), int_to_color(c3));
+    rl::DrawTriangleGradient({ x1, y1 }, { x3, y3 }, { x2, y2 }, rl::IntToColor(c1), rl::IntToColor(c3), rl::IntToColor(c2));
+    rl::DrawTriangleGradient({ x1, y1 }, { x4, y4 }, { x3, y3 }, rl::IntToColor(c1), rl::IntToColor(c4), rl::IntToColor(c3));
     return Blit( vertices, 2 );
 }
 
@@ -307,7 +307,7 @@ HRESULT D3D9Renderer::Blit( SCREEN_VERTEX *vertices, int iTriangles )
     //    memcpy( m_pVertexData + m_iTriangle * 3 * sizeof( SCREEN_VERTEX ), vertices, iTriangles * 3 * sizeof( SCREEN_VERTEX ) );
     //    m_iTriangle += 2;
     //}
-    return S_OK;
+    return 0L;
 }
 
 HRESULT D3D9Renderer::PrepBuffer( int iTriangles )
@@ -317,7 +317,7 @@ HRESULT D3D9Renderer::PrepBuffer( int iTriangles )
     if ( m_iTriangle == 0 )
         return m_pVertexBuffer->Lock( 0, 0, reinterpret_cast< void** >( &m_pVertexData ), D3DLOCK_DISCARD );
     if ( m_iTriangle + iTriangles <= MaxTriangles )
-        return S_OK;
+        return 0L;
 
     FlushBuffer();
     return m_pVertexBuffer->Lock( 0, 0, reinterpret_cast< void** >( &m_pVertexData ), D3DLOCK_DISCARD );
@@ -326,7 +326,7 @@ HRESULT D3D9Renderer::PrepBuffer( int iTriangles )
 HRESULT D3D9Renderer::FlushBuffer()
 {
     if ( m_iTriangle == 0 )
-        return S_OK;
+        return 0L;
 
     m_pVertexBuffer->Unlock();
     m_pd3dDevice->SetStreamSource( 0, m_pVertexBuffer, 0, sizeof( SCREEN_VERTEX ) );
@@ -354,7 +354,7 @@ HRESULT D3D9Renderer::BeginStaticBuffer( int iTriangles )
     m_bStatic = true;
     m_iStaticTriangle = 0;
     m_iStaticMaxTriangles = iTriangles;
-    return S_OK;
+    return 0L;
 }
 
 HRESULT D3D9Renderer::EndStaticBuffer()
@@ -365,7 +365,7 @@ HRESULT D3D9Renderer::EndStaticBuffer()
 
 HRESULT D3D9Renderer::DrawStaticBuffer() {
     if ( m_iStaticTriangle == 0 )
-        return S_OK;
+        return 0L;
 
     FlushBuffer();
     m_pd3dDevice->SetStreamSource( 0, m_pStaticVertexBuffer, 0, sizeof( SCREEN_VERTEX ) );

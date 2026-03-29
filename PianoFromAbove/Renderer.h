@@ -43,8 +43,8 @@ public:
     bool GetLimitFPS() const { return m_bLimitFPS; }
     HRESULT SetLimitFPS( bool bLimitFPS );
 
-    int GetBufferWidth() const { return m_iBufferWidth; }
-    int GetBufferHeight() const { return m_iBufferHeight; }
+    int GetBufferWidth() const { return rl::GetRenderWidth(); }
+    int GetBufferHeight() const { return rl::GetRenderHeight(); }
 
 protected:
     int m_iBufferWidth, m_iBufferHeight;

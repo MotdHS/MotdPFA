@@ -69,7 +69,11 @@ GameState::GameError IntroScreen::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, L
                     m_pNextState = reinterpret_cast< GameState* >( lParam );
                     return Success;
                 case ID_VIEW_RESETDEVICE:
-                    m_pRenderer->ResetDevice();
+                    RECT hwnd_rect;
+                    GetClientRect(hWnd, &hwnd_rect);
+                    MapWindowPoints(hWnd, GetParent(hWnd), (LPPOINT)&hwnd_rect, 2);
+                    rl::SetWindowSize(hwnd_rect.right - hwnd_rect.left,
+                        hwnd_rect.bottom - hwnd_rect.top);
                     return Success;
             }
         }
@@ -91,18 +95,19 @@ GameState::GameError IntroScreen::Logic()
 
 GameState::GameError IntroScreen::Render()
 {
-    if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
+    //if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
 
-    // Clear the backbuffer to a blue color
-    m_pRenderer->Clear( D3DCOLOR_XRGB( 0, 0, 0 ) );
+    //// Clear the backbuffer to a blue color
+    //m_pRenderer->Clear( D3DCOLOR_XRGB( 0, 0, 0 ) );
 
-    m_pRenderer->BeginScene();
-    m_pRenderer->DrawRect( 0.0f, 0.0f, static_cast< float >( m_pRenderer->GetBufferWidth() ),
-                           static_cast< float >( m_pRenderer->GetBufferHeight() ), 0x00000000 );
-    m_pRenderer->EndScene();
+    //m_pRenderer->BeginScene();
+    //m_pRenderer->DrawRect( 0.0f, 0.0f, static_cast< float >( m_pRenderer->GetBufferWidth() ),
+    //                       static_cast< float >( m_pRenderer->GetBufferHeight() ), 0x00000000 );
+    //m_pRenderer->EndScene();
 
-    // Present the backbuffer contents to the display
-    m_pRenderer->Present();
+    //// Present the backbuffer contents to the display
+    //m_pRenderer->Present();
+    rl::ClearBackground(rl::BLACK);
     return Success;
 }
 
@@ -214,7 +219,11 @@ GameState::GameError SplashScreen::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, 
                     m_pNextState = reinterpret_cast< GameState* >( lParam );
                     return Success;
                 case ID_VIEW_RESETDEVICE:
-                    m_pRenderer->ResetDevice();
+                    RECT hwnd_rect;
+                    GetClientRect(hWnd, &hwnd_rect);
+                    MapWindowPoints(hWnd, GetParent(hWnd), (LPPOINT)&hwnd_rect, 2);
+                    rl::SetWindowSize(hwnd_rect.right - hwnd_rect.left,
+                                      hwnd_rect.bottom - hwnd_rect.top);
                     return Success;
             }
         }
@@ -332,15 +341,15 @@ const float SplashScreen::SharpRatio = 0.65f;
 
 GameState::GameError SplashScreen::Render()
 {
-    if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
+    //if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
     // Clear the backbuffer to a blue color
-    m_pRenderer->Clear( D3DCOLOR_XRGB( 0, 0, 0 ) );
+    //m_pRenderer->Clear( D3DCOLOR_XRGB( 0, 0, 0 ) );
 
-    m_pRenderer->BeginScene();
+    //m_pRenderer->BeginScene();
 
-    //dx9
-    m_pRenderer->DrawRect( 0.0f, 0.0f, static_cast< float >( m_pRenderer->GetBufferWidth() ),
-                           static_cast< float >( m_pRenderer->GetBufferHeight() ), 0x00000000 );
+    ////dx9
+    //m_pRenderer->DrawRect( 0.0f, 0.0f, static_cast< float >( m_pRenderer->GetBufferWidth() ),
+    //                       static_cast< float >( m_pRenderer->GetBufferHeight() ), 0x00000000 );
     //rl
     //rl::DrawRectangleRec({
     //    0.0f, 0.0f, static_cast<float>(m_pRenderer->GetBufferWidth()),
@@ -351,9 +360,9 @@ GameState::GameError SplashScreen::Render()
     RenderNotes();
     //rl::DrawText("Please work", 100, 100, 20, rl::WHITE);
 
-    m_pRenderer->EndScene();
-    // Present the backbuffer contents to the display
-    m_pRenderer->Present();
+    //m_pRenderer->EndScene();
+    //// Present the backbuffer contents to the display
+    //m_pRenderer->Present();
     return Success;
 }
 
@@ -476,15 +485,21 @@ void SplashScreen::RenderNote( int iPos )
     iAlpha <<= 24;
     iAlpha1 <<= 24;
     iAlpha2 <<= 24;
-    m_pRenderer->DrawRect( x, y - cy, cx, cy, csTrack.iVeryDarkRGB | iAlpha );
-    m_pRenderer->DrawRect( x + fDeflate, y - cy + fDeflate,
-                            cx - fDeflate * 2.0f, cy - fDeflate * 2.0f,
-                            csTrack.iPrimaryRGB | iAlpha1, csTrack.iDarkRGB | iAlpha1, csTrack.iDarkRGB | iAlpha2, csTrack.iPrimaryRGB | iAlpha2 );
-    //rl::DrawRectangle(x, y - cy, cx, cy, int_to_color(csTrack.iVeryDarkRGB));
+    //m_pRenderer->DrawRect( x, y - cy, cx, cy, csTrack.iVeryDarkRGB | iAlpha );
+    //m_pRenderer->DrawRect( x + fDeflate, y - cy + fDeflate,
+    //                        cx - fDeflate * 2.0f, cy - fDeflate * 2.0f,
+    //                        csTrack.iPrimaryRGB | iAlpha1, csTrack.iDarkRGB | iAlpha1, csTrack.iDarkRGB | iAlpha2, csTrack.iPrimaryRGB | iAlpha2 );
+    rl::DrawRectangleRec(rl::AlignRectangle({ x, y - cy, cx, cy }), rl::IntToColor(csTrack.iVeryDarkRGB | iAlpha));
     //rl::DrawRectangleGradientH(x + fDeflate, y - cy + fDeflate,
     //    cx - fDeflate * 2.0f, cy - fDeflate * 2.0f,
-    //    int_to_color(csTrack.iPrimaryRGB), int_to_color(csTrack.iDarkRGB)
+    //    int_to_color(csTrack.iPrimaryRGB | iAlpha1), int_to_color(csTrack.iDarkRGB | iAlpha2)
     //);
+    rl::DrawRectangleGradientEx(
+        rl::AlignRectangle({ x + fDeflate, y - cy + fDeflate,
+            cx - fDeflate * 2.0f, cy - fDeflate * 2.0f}),
+        rl::IntToColor(csTrack.iPrimaryRGB | iAlpha1), rl::IntToColor(csTrack.iPrimaryRGB | iAlpha1),
+        rl::IntToColor(csTrack.iDarkRGB | iAlpha2), rl::IntToColor(csTrack.iDarkRGB | iAlpha2)
+    );
 }
 
 float SplashScreen::GetNoteX( int iNote )
@@ -724,7 +739,11 @@ GameState::GameError MainScreen::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LP
                     JumpTo( static_cast< long long >( m_llStartTime - cControls.dFwdBackSecs * 1000000 ) );
                     return Success;
                 case ID_VIEW_RESETDEVICE:
-                    m_pRenderer->ResetDevice();
+                    RECT hwnd_rect;
+                    GetClientRect(hWnd, &hwnd_rect);
+                    MapWindowPoints(hWnd, GetParent(hWnd), (LPPOINT)&hwnd_rect, 2);
+                    rl::SetWindowSize(hwnd_rect.right - hwnd_rect.left,
+                        hwnd_rect.bottom - hwnd_rect.top);
                     return Success;
                 case ID_VIEW_MOVEANDZOOM:
                     if ( cView.GetZoomMove() )
@@ -909,7 +928,7 @@ GameState::GameError MainScreen::Logic( void )
     m_iStartNote = min( cVisual.iFirstKey, cVisual.iLastKey );
     m_iEndNote = max( cVisual.iFirstKey, cVisual.iLastKey );
     m_bShowFPS = cVideo.bShowFPS;
-    m_pRenderer->SetLimitFPS( cVideo.bLimitFPS );
+    rl::SetLimitFPS( cVideo.bLimitFPS );
     if ( cVisual.iBkgColor != m_csBackground.iOrigBGR ) m_csBackground.SetColor( cVisual.iBkgColor, 0.7f, 1.3f );
 
     double dMaxCorrect = ( mInfo.iMaxVolume > 0 ? 127.0 / mInfo.iMaxVolume : 1.0 );
@@ -1284,22 +1303,22 @@ const float MainScreen::KeyRatio = 0.1775f;
 
 GameState::GameError MainScreen::Render() 
 {
-    if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
+    //if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
 
-    m_pRenderer->Clear( 0x00000000 );
+    //m_pRenderer->Clear( 0x00000000 );
     rl::ClearBackground(rl::BLACK);
 
-    m_pRenderer->BeginScene();
+    //m_pRenderer->BeginScene();
     RenderLines();
     RenderNotes();
     if ( m_bShowKB )
         RenderKeys();
     RenderBorder();
     RenderText();
-    m_pRenderer->EndScene();
+    //m_pRenderer->EndScene();
 
     // Present the backbuffer contents to the display
-    m_pRenderer->Present();
+    //m_pRenderer->Present();
     return Success;
 }
 
@@ -1351,7 +1370,11 @@ void MainScreen::RenderGlobals()
 
 void MainScreen::RenderLines()
 {
-    m_pRenderer->DrawRect( m_fNotesX, m_fNotesY, m_fNotesCX, m_fNotesCY, m_csBackground.iPrimaryRGB );
+    //m_pRenderer->DrawRect( m_fNotesX, m_fNotesY, m_fNotesCX, m_fNotesCY, m_csBackground.iPrimaryRGB );
+    rl::DrawRectangleRec(
+        rl::AlignRectangle({ m_fNotesX, m_fNotesY, m_fNotesCX, m_fNotesCY }),
+        rl::IntToColor(m_csBackground.iPrimaryRGB)
+    );
 
     // Vertical lines
     for ( int i = m_iStartNote + 1; i <= m_iEndNote; i++ )
@@ -1361,8 +1384,10 @@ void MainScreen::RenderLines()
             float fStartX = MIDI::IsSharp( m_iStartNote ) * SharpRatio / 2.0f;
             float x = m_fNotesX + m_fWhiteCX * ( iWhiteKeys + fStartX );
             x = floor( x + 0.5f ); // Needs to be rounded because of the gradient
-            m_pRenderer->DrawRect( x - 1.0f, m_fNotesY, 3.0f, m_fNotesCY,
-                m_csBackground.iDarkRGB, m_csBackground.iVeryDarkRGB, m_csBackground.iVeryDarkRGB, m_csBackground.iDarkRGB );
+            //rlc::DrawRect( x - 1.0f, m_fNotesY, 3.0f, m_fNotesCY,
+            //    m_csBackground.iDarkRGB, m_csBackground.iVeryDarkRGB, m_csBackground.iVeryDarkRGB, m_csBackground.iDarkRGB );
+            rl::DrawRectangleRecGradientH({ x - 1.0f, m_fNotesY, 3.0f, m_fNotesCY },
+                rl::IntToColor(m_csBackground.iDarkRGB), rl::IntToColor(m_csBackground.iVeryDarkRGB));
         }
 
     // Horizontal (Hard!)
@@ -1419,7 +1444,7 @@ void MainScreen::RenderLines()
             float y = m_fNotesY + m_fNotesCY * ( 1.0f - static_cast< float >( llNextBeatTime - m_llRndStartTime ) / m_llTimeSpan );
             y = floor( y + 0.5f );
             if ( bIsMeasure && y + 1.0f > m_fNotesY )
-                m_pRenderer->DrawRect( m_fNotesX, y - 1.0f, m_fNotesCX, 3.0f,
+                rlc::DrawRect( m_fNotesX, y - 1.0f, m_fNotesCX, 3.0f,
                     m_csBackground.iDarkRGB, m_csBackground.iDarkRGB, m_csBackground.iVeryDarkRGB, m_csBackground.iVeryDarkRGB );
 
             iCurrTick = iNextBeatTick;
@@ -1512,8 +1537,8 @@ void MainScreen::RenderNote( int iPos )
         y = fMinY + cy;
     }
 
-    m_pRenderer->DrawRect( x, y - cy, cx, cy, csTrack.iVeryDarkRGB );
-    m_pRenderer->DrawRect( x + fDeflate, y - cy + fDeflate,
+    rl::DrawRectangleRec({ x, y - cy, cx, cy }, rl::IntToColor(csTrack.iVeryDarkRGB));
+    rlc::DrawRect( x + fDeflate, y - cy + fDeflate,
                             cx - fDeflate * 2.0f, cy - fDeflate * 2.0f,
                             csTrack.iPrimaryRGB, csTrack.iDarkRGB, csTrack.iDarkRGB, csTrack.iPrimaryRGB );
 }
@@ -1546,13 +1571,14 @@ void MainScreen::RenderKeys()
     float fNearCY = fKeysCY - fSpacerCY - fRedCY - fTransitionCY - fTopCY;
 
     // Draw the background
-    m_pRenderer->DrawRect( m_fNotesX, fKeysY, m_fNotesCX, fKeysCY, m_csKBBackground.iVeryDarkRGB );
-    m_pRenderer->DrawRect( m_fNotesX, fKeysY, m_fNotesCX, fTransitionCY,
-        m_csBackground.iPrimaryRGB, m_csBackground.iPrimaryRGB, m_csKBBackground.iVeryDarkRGB, m_csKBBackground.iVeryDarkRGB );
-    m_pRenderer->DrawRect( m_fNotesX, fKeysY + fTransitionCY, m_fNotesCX, fRedCY,
-        m_csKBRed.iDarkRGB, m_csKBRed.iDarkRGB, m_csKBRed.iPrimaryRGB, m_csKBRed.iPrimaryRGB );
-    m_pRenderer->DrawRect( m_fNotesX, fKeysY + fTransitionCY + fRedCY, m_fNotesCX, fSpacerCY,
-        m_csKBBackground.iDarkRGB, m_csKBBackground.iDarkRGB, m_csKBBackground.iDarkRGB, m_csKBBackground.iDarkRGB );
+    rl::DrawRectangleRec({ m_fNotesX, fKeysY, m_fNotesCX, fKeysCY },
+        rl::IntToColor(m_csKBBackground.iVeryDarkRGB));
+    rl::DrawRectangleRecGradientV({ m_fNotesX, fKeysY, m_fNotesCX, fTransitionCY },
+        rl::IntToColor(m_csBackground.iPrimaryRGB), rl::IntToColor(m_csKBBackground.iVeryDarkRGB));
+    rl::DrawRectangleRecGradientV({ m_fNotesX, fKeysY + fTransitionCY, m_fNotesCX , fRedCY },
+        rl::IntToColor(m_csKBRed.iDarkRGB), rl::IntToColor(m_csKBRed.iPrimaryRGB));
+    rl::DrawRectangleRec({ m_fNotesX, fKeysY + fTransitionCY + fRedCY, m_fNotesCX, fSpacerCY },
+        rl::IntToColor(m_csKBBackground.iDarkRGB));
 
     // Keys info
     float fKeyGap = max( 1.0f, floor( m_fWhiteCX * 0.05f + 0.5f ) );
@@ -1571,19 +1597,23 @@ void MainScreen::RenderKeys()
         {
             if ( m_pNoteState[i] == -1 )
             {
-                m_pRenderer->DrawRect( fCurX + fKeyGap1 , fCurY, m_fWhiteCX - fKeyGap, fTopCY + fNearCY,
-                    m_csKBWhite.iDarkRGB, m_csKBWhite.iDarkRGB, m_csKBWhite.iPrimaryRGB, m_csKBWhite.iPrimaryRGB );
-                m_pRenderer->DrawRect( fCurX + fKeyGap1 , fCurY + fTopCY, m_fWhiteCX - fKeyGap, fNearCY,
-                    m_csKBWhite.iDarkRGB, m_csKBWhite.iDarkRGB, m_csKBWhite.iVeryDarkRGB, m_csKBWhite.iVeryDarkRGB );
-                m_pRenderer->DrawRect( fCurX + fKeyGap1, fCurY + fTopCY, m_fWhiteCX - fKeyGap, 2.0f,
-                    m_csKBBackground.iDarkRGB, m_csKBBackground.iDarkRGB, m_csKBWhite.iVeryDarkRGB, m_csKBWhite.iVeryDarkRGB );
+                rl::DrawRectangleRecGradientV({ fCurX + fKeyGap1 , fCurY, m_fWhiteCX - fKeyGap, fTopCY + fNearCY },
+                    rl::IntToColor(m_csKBWhite.iDarkRGB), rl::IntToColor(m_csKBWhite.iPrimaryRGB ));
+                rl::DrawRectangleRecGradientV({ fCurX + fKeyGap1 , fCurY + fTopCY, m_fWhiteCX - fKeyGap, fNearCY },
+                    rl::IntToColor(m_csKBWhite.iDarkRGB), rl::IntToColor(m_csKBWhite.iVeryDarkRGB ));
+                rl::DrawRectangleRecGradientV({ fCurX + fKeyGap1, fCurY + fTopCY, m_fWhiteCX - fKeyGap, 2.0f },
+                    rl::IntToColor(m_csKBBackground.iDarkRGB), rl::IntToColor(m_csKBWhite.iVeryDarkRGB ));
 
                 if ( i == MIDI::C4 )
                 {
                     float fMXGap = floor( m_fWhiteCX * 0.25f + 0.5f );
                     float fMCX = m_fWhiteCX - fMXGap * 2.0f - fKeyGap;
                     float fMY = max( fCurY + fTopCY - fMCX - 5.0f, fCurY + fSharpCY + 5.0f );
-                    m_pRenderer->DrawRect( fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY - 5.0f - fMY, m_csKBWhite.iDarkRGB );
+                    //m_pRenderer->DrawRect( fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY - 5.0f - fMY, m_csKBWhite.iDarkRGB );
+                    rl::DrawRectangleRec(
+                        { fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY - 5.0f - fMY },
+                        rl::IntToColor(m_csKBWhite.iDarkRGB)
+                    );
                 }
             }
             else
@@ -1593,20 +1623,22 @@ void MainScreen::RenderKeys()
                 const int iChannel = ( pEvent ? pEvent->GetChannel() : -1 );
 
                 ChannelSettings &csKBWhite = m_vTrackSettings[iTrack].aChannels[iChannel];
-                m_pRenderer->DrawRect( fCurX + fKeyGap1 , fCurY, m_fWhiteCX - fKeyGap, fTopCY + fNearCY - 2.0f,
-                    csKBWhite.iDarkRGB, csKBWhite.iDarkRGB, csKBWhite.iPrimaryRGB, csKBWhite.iPrimaryRGB );
-                m_pRenderer->DrawRect( fCurX + fKeyGap1 , fCurY + fTopCY + fNearCY - 2.0f, m_fWhiteCX - fKeyGap, 2.0f, csKBWhite.iDarkRGB );
+                rl::DrawRectangleRecGradientV({ fCurX + fKeyGap1 , fCurY, m_fWhiteCX - fKeyGap, fTopCY + fNearCY - 2.0f },
+                    rl::IntToColor(csKBWhite.iDarkRGB), rl::IntToColor(csKBWhite.iPrimaryRGB));
+                rl::DrawRectangleRec({ fCurX + fKeyGap1 , fCurY + fTopCY + fNearCY - 2.0f, m_fWhiteCX - fKeyGap, 2.0f },
+                    rl::IntToColor(csKBWhite.iDarkRGB));
 
                 if ( i == MIDI::C4 )
                 {
                     float fMXGap = floor( m_fWhiteCX * 0.25f + 0.5f );
                     float fMCX = m_fWhiteCX - fMXGap * 2.0f - fKeyGap;
                     float fMY = max( fCurY + fTopCY + fNearCY - fMCX - 7.0f, fCurY + fSharpCY + 5.0f );
-                    m_pRenderer->DrawRect( fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY + fNearCY - 7.0f - fMY, csKBWhite.iDarkRGB );
+                    rl::DrawRectangleRec({ fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY + fNearCY - 7.0f - fMY },
+                        rl::IntToColor(csKBWhite.iDarkRGB));
                 }
             }
-            m_pRenderer->DrawRect( floor( fCurX + fKeyGap1 + m_fWhiteCX - fKeyGap + 0.5f ), fCurY, fKeyGap, fTopCY + fNearCY,
-                m_csKBBackground.iVeryDarkRGB, m_csKBBackground.iPrimaryRGB, m_csKBBackground.iPrimaryRGB, m_csKBBackground.iVeryDarkRGB );
+            rl::DrawRectangleRecGradientH({ floor(fCurX + fKeyGap1 + m_fWhiteCX - fKeyGap + 0.5f), fCurY, fKeyGap, fTopCY + fNearCY },
+                rl::IntToColor(m_csKBBackground.iVeryDarkRGB), rl::IntToColor(m_csKBBackground.iPrimaryRGB));
 
             fCurX += m_fWhiteCX;
         }
@@ -1636,25 +1668,25 @@ void MainScreen::RenderKeys()
 
             if ( m_pNoteState[i] == -1 )
             {
-                m_pRenderer->DrawSkew( fSharpTopX1, fCurY + fSharpCY - fNearCY,
+                rlc::DrawSkew( fSharpTopX1, fCurY + fSharpCY - fNearCY,
                                        fSharpTopX2, fCurY + fSharpCY - fNearCY,
                                        x + cx, fCurY + fSharpCY, x, fCurY + fSharpCY,
                                        m_csKBSharp.iPrimaryRGB, m_csKBSharp.iPrimaryRGB, m_csKBSharp.iVeryDarkRGB, m_csKBSharp.iVeryDarkRGB );
-                m_pRenderer->DrawSkew( fSharpTopX1, fCurY - fNearCY,
+                rlc::DrawSkew( fSharpTopX1, fCurY - fNearCY,
                                        fSharpTopX1, fCurY + fSharpCY - fNearCY,
                                        x, fCurY + fSharpCY, x, fCurY,
                                        m_csKBSharp.iPrimaryRGB, m_csKBSharp.iPrimaryRGB, m_csKBSharp.iVeryDarkRGB, m_csKBSharp.iVeryDarkRGB );
-                m_pRenderer->DrawSkew( fSharpTopX2, fCurY + fSharpCY - fNearCY,
+                rlc::DrawSkew( fSharpTopX2, fCurY + fSharpCY - fNearCY,
                                        fSharpTopX2, fCurY - fNearCY,
                                        x + cx, fCurY, x + cx, fCurY + fSharpCY,
                                        m_csKBSharp.iPrimaryRGB, m_csKBSharp.iPrimaryRGB, m_csKBSharp.iVeryDarkRGB, m_csKBSharp.iVeryDarkRGB );
-                m_pRenderer->DrawRect( fSharpTopX1, fCurY - fNearCY, fSharpTopX2 - fSharpTopX1, fSharpCY, m_csKBSharp.iVeryDarkRGB );
-                m_pRenderer->DrawSkew( fSharpTopX1, fCurY - fNearCY,
+                rlc::DrawRect( fSharpTopX1, fCurY - fNearCY, fSharpTopX2 - fSharpTopX1, fSharpCY, m_csKBSharp.iVeryDarkRGB );
+                rlc::DrawSkew( fSharpTopX1, fCurY - fNearCY,
                                        fSharpTopX2, fCurY - fNearCY,
                                        fSharpTopX2, fCurY - fNearCY + fSharpCY * 0.45f,
                                        fSharpTopX1, fCurY - fNearCY + fSharpCY * 0.35f,
                                        m_csKBSharp.iDarkRGB, m_csKBSharp.iDarkRGB, m_csKBSharp.iPrimaryRGB, m_csKBSharp.iPrimaryRGB );
-                m_pRenderer->DrawSkew( fSharpTopX1, fCurY - fNearCY + fSharpCY * 0.35f,
+                rlc::DrawSkew( fSharpTopX1, fCurY - fNearCY + fSharpCY * 0.35f,
                                        fSharpTopX2, fCurY - fNearCY + fSharpCY * 0.45f,
                                        fSharpTopX2, fCurY - fNearCY + fSharpCY * 0.65f,
                                        fSharpTopX1, fCurY - fNearCY + fSharpCY * 0.55f,
@@ -1669,25 +1701,25 @@ void MainScreen::RenderKeys()
                 const float fNewNear = fNearCY * 0.25f;
 
                 const ChannelSettings &csKBSharp = m_vTrackSettings[iTrack].aChannels[iChannel];
-                m_pRenderer->DrawSkew( fSharpTopX1, fCurY + fSharpCY - fNewNear,
+                rlc::DrawSkew( fSharpTopX1, fCurY + fSharpCY - fNewNear,
                                        fSharpTopX2, fCurY + fSharpCY - fNewNear,
                                        x + cx, fCurY + fSharpCY, x, fCurY + fSharpCY,
                                        csKBSharp.iPrimaryRGB, csKBSharp.iPrimaryRGB, csKBSharp.iDarkRGB, csKBSharp.iDarkRGB );
-                m_pRenderer->DrawSkew( fSharpTopX1, fCurY - fNewNear,
+                rlc::DrawSkew( fSharpTopX1, fCurY - fNewNear,
                                        fSharpTopX1, fCurY + fSharpCY - fNewNear,
                                        x, fCurY + fSharpCY, x, fCurY,
                                        csKBSharp.iPrimaryRGB, csKBSharp.iPrimaryRGB, csKBSharp.iDarkRGB, csKBSharp.iDarkRGB );
-                m_pRenderer->DrawSkew( fSharpTopX2, fCurY + fSharpCY - fNewNear,
+                rlc::DrawSkew( fSharpTopX2, fCurY + fSharpCY - fNewNear,
                                        fSharpTopX2, fCurY - fNewNear,
                                        x + cx, fCurY, x + cx, fCurY + fSharpCY,
                                        csKBSharp.iPrimaryRGB, csKBSharp.iPrimaryRGB, csKBSharp.iDarkRGB, csKBSharp.iDarkRGB );
-                m_pRenderer->DrawRect( fSharpTopX1, fCurY - fNewNear, fSharpTopX2 - fSharpTopX1, fSharpCY, csKBSharp.iDarkRGB );
-                m_pRenderer->DrawSkew( fSharpTopX1, fCurY - fNewNear,
+                rlc::DrawRect( fSharpTopX1, fCurY - fNewNear, fSharpTopX2 - fSharpTopX1, fSharpCY, csKBSharp.iDarkRGB );
+                rlc::DrawSkew( fSharpTopX1, fCurY - fNewNear,
                                        fSharpTopX2, fCurY - fNewNear,
                                        fSharpTopX2, fCurY - fNewNear + fSharpCY * 0.35f,
                                        fSharpTopX1, fCurY - fNewNear + fSharpCY * 0.25f,
                                        csKBSharp.iPrimaryRGB, csKBSharp.iPrimaryRGB, csKBSharp.iPrimaryRGB, csKBSharp.iPrimaryRGB );
-                m_pRenderer->DrawSkew( fSharpTopX1, fCurY - fNewNear + fSharpCY * 0.25f,
+                rlc::DrawSkew( fSharpTopX1, fCurY - fNewNear + fSharpCY * 0.25f,
                                        fSharpTopX2, fCurY - fNewNear + fSharpCY * 0.35f,
                                        fSharpTopX2, fCurY - fNewNear + fSharpCY * 0.75f,
                                        fSharpTopX1, fCurY - fNewNear + fSharpCY * 0.65f,
@@ -1701,23 +1733,23 @@ void MainScreen::RenderBorder()
     // Top, bottom, left, right
     const unsigned iBlack = 0x00000000;
     float fBufferCY = static_cast< float >( m_pRenderer->GetBufferHeight() );
-    m_pRenderer->DrawRect( m_fNotesX - 50.0f, m_fNotesY - 50.0f, m_fNotesCX + 100.0f, 50.0f, iBlack );
-    m_pRenderer->DrawRect( m_fNotesX - 50.0f, m_fNotesY + fBufferCY, m_fNotesCX + 100.0f, 50.0f, iBlack );
-    m_pRenderer->DrawRect( m_fNotesX - m_fWhiteCX, m_fNotesY - 50.0f, m_fWhiteCX, fBufferCY + 100.0f, iBlack );
-    m_pRenderer->DrawRect( m_fNotesX + m_fNotesCX, m_fNotesY - 50.0f, m_fWhiteCX, fBufferCY + 100.0f, iBlack );
+    rlc::DrawRect( m_fNotesX - 50.0f, m_fNotesY - 50.0f, m_fNotesCX + 100.0f, 50.0f, iBlack );
+    rlc::DrawRect( m_fNotesX - 50.0f, m_fNotesY + fBufferCY, m_fNotesCX + 100.0f, 50.0f, iBlack );
+    rlc::DrawRect( m_fNotesX - m_fWhiteCX, m_fNotesY - 50.0f, m_fWhiteCX, fBufferCY + 100.0f, iBlack );
+    rlc::DrawRect( m_fNotesX + m_fNotesCX, m_fNotesY - 50.0f, m_fWhiteCX, fBufferCY + 100.0f, iBlack );
 
     const float fPad = 10.0f;
     const unsigned iBkg = m_csBackground.iPrimaryRGB;
-    m_pRenderer->DrawSkew( m_fNotesX, m_fNotesY + fBufferCY, m_fNotesX + m_fNotesCX, m_fNotesY + fBufferCY,
+    rlc::DrawSkew( m_fNotesX, m_fNotesY + fBufferCY, m_fNotesX + m_fNotesCX, m_fNotesY + fBufferCY,
                            m_fNotesX + m_fNotesCX + fPad, m_fNotesY + fBufferCY + fPad, m_fNotesX - fPad, m_fNotesY + fBufferCY + fPad,
                            iBkg, iBkg, iBlack, iBlack );
-    m_pRenderer->DrawSkew( m_fNotesX - fPad, m_fNotesY - fPad, m_fNotesX + m_fNotesCX + fPad, m_fNotesY - fPad,
+    rlc::DrawSkew( m_fNotesX - fPad, m_fNotesY - fPad, m_fNotesX + m_fNotesCX + fPad, m_fNotesY - fPad,
                            m_fNotesX + m_fNotesCX, m_fNotesY, m_fNotesX, m_fNotesY,
                            iBlack, iBlack, iBkg, iBkg );
-    m_pRenderer->DrawSkew( m_fNotesX - fPad, m_fNotesY - fPad, m_fNotesX, m_fNotesY,
+    rlc::DrawSkew( m_fNotesX - fPad, m_fNotesY - fPad, m_fNotesX, m_fNotesY,
                            m_fNotesX, m_fNotesY + fBufferCY, m_fNotesX - fPad, m_fNotesY + fBufferCY + fPad,
                            iBlack, iBkg, iBkg, iBlack );
-    m_pRenderer->DrawSkew( m_fNotesX + m_fNotesCX, m_fNotesY, m_fNotesX + m_fNotesCX + fPad, m_fNotesY - fPad,
+    rlc::DrawSkew( m_fNotesX + m_fNotesCX, m_fNotesY, m_fNotesX + m_fNotesCX + fPad, m_fNotesY - fPad,
                            m_fNotesX + m_fNotesCX + fPad, m_fNotesY + fBufferCY + fPad, m_fNotesX + m_fNotesCX, m_fNotesY + fBufferCY,
                            iBkg, iBlack, iBlack, iBkg );
 }
@@ -1728,29 +1760,29 @@ void MainScreen::RenderText()
     if ( m_bShowFPS ) iLines++;
 
     // Screen info
-    RECT rcStatus = { m_pRenderer->GetBufferWidth() - 250, 0, m_pRenderer->GetBufferWidth(), 6 + 22 * iLines };
+    RECT rcStatus = { rlc::GetBufferWidth() - 250, 0, rlc::GetBufferWidth(), 6 + 22 * iLines };
 
     int iMsgCY = 200;
-    RECT rcMsg = { 0, static_cast< int >( m_pRenderer->GetBufferHeight() * ( 1.0f - KBPercent ) - iMsgCY ) / 2 };
-    rcMsg.right = m_pRenderer->GetBufferWidth();
+    RECT rcMsg = { 0, static_cast< int >( rlc::GetBufferHeight() * ( 1.0f - KBPercent ) - iMsgCY ) / 2 };
+    rcMsg.right = rlc::GetBufferWidth();
     rcMsg.bottom = rcMsg.top + iMsgCY;
 
     // Draw the backgrounds
     unsigned iBkgColor = 0x40000000;
-    m_pRenderer->DrawRect( static_cast< float >( rcStatus.left ), static_cast< float >( rcStatus.top ), 
+    rlc::DrawRect( static_cast< float >( rcStatus.left ), static_cast< float >( rcStatus.top ), 
         static_cast< float >( rcStatus.right - rcStatus.left ), static_cast< float >( rcStatus.bottom - rcStatus.top ), 0x80000000 );
     if ( m_bZoomMove )
-        m_pRenderer->DrawRect( static_cast< float >( rcMsg.left ), static_cast< float >( rcMsg.top ), 
+        rlc::DrawRect( static_cast< float >( rcMsg.left ), static_cast< float >( rcMsg.top ), 
             static_cast< float >( rcMsg.right - rcMsg.left ), static_cast< float >( rcMsg.bottom - rcMsg.top ), iBkgColor );
 
     // Draw the text
-    m_pRenderer->BeginText();
+    //m_pRenderer->BeginText();
 
     RenderStatus( &rcStatus );
     if ( m_bZoomMove )
         RenderMessage( &rcMsg, TEXT( "- Left-click and drag to move the screen\n- Right-click and drag to zoom horizontally\n- Press Escape to abort changes\n- Press Ctrl+V to save changes" ) );
     
-    m_pRenderer->EndText();
+    //m_pRenderer->EndText();
 }
 
 void MainScreen::RenderStatus( LPRECT prcStatus )
@@ -1760,11 +1792,11 @@ void MainScreen::RenderStatus( LPRECT prcStatus )
     char cTime[128];
     const MIDI::MIDIInfo &mInfo = m_MIDI.GetInfo();
     if ( m_llStartTime >= 0 )
-        _stprintf_s( sTime, TEXT( "%lld:%04.1lf / %lld:%04.1lf" ),
+        _stprintf_s( sTime, TEXT( "%lld:%05.2lf / %lld:%05.2lf" ),
             m_llStartTime / 60000000, ( m_llStartTime % 60000000 ) / 1000000.0,
             mInfo.llTotalMicroSecs / 60000000, ( mInfo.llTotalMicroSecs % 60000000 ) / 1000000.0 );
     else
-        _stprintf_s( sTime, TEXT( "\t-%lld:%04.1lf / %lld:%04.1lf" ),
+        _stprintf_s( sTime, TEXT( "\t-%lld:%05.2lf / %lld:%05.2lf" ),
             -m_llStartTime / 60000000, ( -m_llStartTime % 60000000 ) / 1000000.0,
             mInfo.llTotalMicroSecs / 60000000, ( mInfo.llTotalMicroSecs % 60000000 ) / 1000000.0 );
     wcstombs(cTime, sTime, 128);
@@ -1773,7 +1805,7 @@ void MainScreen::RenderStatus( LPRECT prcStatus )
     // Build the FPS text
     TCHAR sFPS[128];
     char cFPS[128];
-    _stprintf_s( sFPS, TEXT( "%.1lf" ), m_dFPS );
+    _stprintf_s( sFPS, TEXT( "%.2lf" ), m_dFPS );
     wcstombs(cFPS, sFPS, 128);
     int cFPS_measured = rl::MeasureText(cFPS, 20);
 

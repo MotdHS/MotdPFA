@@ -174,46 +174,67 @@ DWORD WINAPI GameThread( LPVOID lpParameter )
     if ( !g_hWndGfx ) return 0;
 
     // Initialize Direct3D
-    Renderer *pRenderer = new D3D9Renderer();
-    if( FAILED( pRenderer->Init( g_hWndGfx, Config::GetConfig().GetVideoSettings().bLimitFPS ) ) )
-    {
-        MessageBox( g_hWnd, TEXT( "Fatal error initializing Direct3D. Is DirectX 9 installed properly?" ), TEXT( "Error" ), MB_OK | MB_ICONEXCLAMATION );
-        PostMessage( g_hWnd, WM_QUIT, 1, 0 );
-        return 1;
-    }
+    //Renderer *pRenderer = new D3D9Renderer();
+    //if( FAILED( pRenderer->Init( g_hWndGfx, Config::GetConfig().GetVideoSettings().bLimitFPS ) ) )
+    //{
+    //    MessageBox( g_hWnd, TEXT( "Fatal error initializing Direct3D. Is DirectX 9 installed properly?" ), TEXT( "Error" ), MB_OK | MB_ICONEXCLAMATION );
+    //    PostMessage( g_hWnd, WM_QUIT, 1, 0 );
+    //    return 1;
+    //}
 
     // Create the game object
     GameState *pGameState = reinterpret_cast< GameState* >( lpParameter );
     rl::InitWindow(800, 600, "Piano From Above but raylib");
     HWND g_hWnd_rl = (HWND)rl::GetWindowHandle();
     rl::SetWindowState(rl::ConfigFlags::FLAG_WINDOW_UNDECORATED | rl::ConfigFlags::FLAG_WINDOW_MOUSE_PASSTHROUGH);
-    rl::SetWindowPosition(0, 0);
+    LONG_PTR style = GetWindowLongPtr(g_hWnd_rl, GWL_STYLE);
+    style &= ~(WS_POPUP | WS_CAPTION | WS_THICKFRAME | WS_SYSMENU);
+    style |= (WS_CHILD | WS_CLIPSIBLINGS);
+    SetWindowLongPtr(g_hWnd_rl, GWL_STYLE, style);
+    SetWindowPos(g_hWnd_rl, NULL, 0, 0, 800, 600, SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
     SetParent(g_hWnd_rl, g_hWndGfx);
-    SetWindowLongPtr(g_hWnd_rl, GWL_STYLE, GetWindowLongPtr(g_hWnd_rl, GWL_STYLE) | WS_CHILD);
 
-    pGameState->SetHWnd( g_hWndGfx );
-    pGameState->SetRenderer( pRenderer );
+    if (Config::GetConfig().GetVideoSettings().bLimitFPS)
+        rl::SetWindowState(rl::ConfigFlags::FLAG_VSYNC_HINT);
+    else
+        rl::ClearWindowState(rl::ConfigFlags::FLAG_VSYNC_HINT);
+
+    pGameState->SetHWnd( g_hWnd_rl );
+    //pGameState->SetRenderer( pRenderer );
     pGameState->Init();
     GameState::GameError ge;
 
     // Event, logic, render...
     MSG msg = { 0 };
-    while( msg.message != WM_QUIT )
+    while (msg.message != WM_QUIT)
     {
-        while ( g_MsgQueue.Pop( msg ) )
-            pGameState->MsgProc( msg.hwnd, msg.message, msg.wParam, msg.lParam );
+        while (g_MsgQueue.Pop(msg))
+            pGameState->MsgProc(msg.hwnd, msg.message, msg.wParam, msg.lParam);
 
-        if ( ( ge = GameState::ChangeState( pGameState->NextState(), &pGameState ) ) != GameState::Success )
-            PostMessage( g_hWnd, WM_COMMAND, ID_GAMEERROR, ge );
+        if ((ge = GameState::ChangeState(pGameState->NextState(), &pGameState)) != GameState::Success)
+            PostMessage(g_hWnd, WM_COMMAND, ID_GAMEERROR, ge);
         pGameState->Logic();
         rl::BeginDrawing();
         pGameState->Render();
+
+        // Just to verify if the render size is correct
+        //rl::DrawRectangle(0, 0, 10, 10, rl::RED);
+        //rl::DrawRectangle(rl::GetRenderWidth() - 10, 0, 10, 10, rl::RED);
+        //rl::DrawRectangle(0, rl::GetRenderHeight() - 10, 10, 10, rl::RED);
+        //rl::DrawRectangle(rl::GetRenderWidth() - 10, rl::GetRenderHeight() - 10, 10, 10, rl::RED);
+
+        //rl::DrawRectangle(1, 1, 10, 10, rl::WHITE);
+        //rl::DrawRectangle(rl::GetRenderWidth() - 11, 1, 10, 10, rl::WHITE);
+        //rl::DrawRectangle(1, rl::GetRenderHeight() - 11, 10, 10, rl::WHITE);
+        //rl::DrawRectangle(rl::GetRenderWidth() - 11, rl::GetRenderHeight() - 11, 10, 10, rl::WHITE);
+
         //rl::DrawFPS(10, 10);
+
         rl::EndDrawing();
     }
 
     delete pGameState;
-    delete pRenderer;
+    //delete pRenderer;
     rl::CloseWindow();
 
     return 0;
