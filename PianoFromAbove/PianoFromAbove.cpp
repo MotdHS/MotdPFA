@@ -39,6 +39,20 @@ TSQueue< MSG > g_MsgQueue; // Producer/consumer to hold events for our game thre
 //-----------------------------------------------------------------------------
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, INT nCmdShow )
 {
+    /*
+    rl::InitWindow(800, 600, "Meows");
+    while (!rl::WindowShouldClose()) {
+        rl::BeginDrawing();
+        rl::ClearBackground(rl::BLACK);
+        rl::DrawText("meows", 10, 10, 20, rl::WHITE);
+        rl::DrawTextPro(rl::GetFontDefault(), "Please Work!!!!!!!",
+            { 50, 50 }, { 0, 0 }, 0, 20, 2, rl::WHITE);
+        rl::DrawRectangle(250, 250, 50, 50, rl::GREEN);
+        rl::EndDrawing();
+    }
+    rl::CloseWindow();
+    exit(0);
+    */
     g_hInstance = hInstance;
     srand( ( unsigned )time( NULL ) );
 
@@ -170,6 +184,8 @@ DWORD WINAPI GameThread( LPVOID lpParameter )
 
     // Create the game object
     GameState *pGameState = reinterpret_cast< GameState* >( lpParameter );
+    rl::InitWindow(800, 600, "Piano From Above but raylib");
+
     pGameState->SetHWnd( g_hWndGfx );
     pGameState->SetRenderer( pRenderer );
     pGameState->Init();
@@ -185,11 +201,15 @@ DWORD WINAPI GameThread( LPVOID lpParameter )
         if ( ( ge = GameState::ChangeState( pGameState->NextState(), &pGameState ) ) != GameState::Success )
             PostMessage( g_hWnd, WM_COMMAND, ID_GAMEERROR, ge );
         pGameState->Logic();
+        rl::BeginDrawing();
         pGameState->Render();
+        //rl::DrawFPS(10, 10);
+        rl::EndDrawing();
     }
 
     delete pGameState;
     delete pRenderer;
+    rl::CloseWindow();
 
     return 0;
 }

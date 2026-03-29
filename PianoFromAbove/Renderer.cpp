@@ -8,6 +8,7 @@
 *
 *************************************************************************************************/
 #include "Renderer.h"
+#include "RaylibHelper.h"
 
 HRESULT Renderer::SetLimitFPS( bool bLimitFPS )
 {
@@ -34,6 +35,8 @@ D3D9Renderer::~D3D9Renderer()
 
     if( m_pD3D ) m_pD3D->Release();
 }
+
+
 
 void D3D9Renderer::DestroyDeviceObjects()
 {
@@ -172,6 +175,8 @@ HRESULT D3D9Renderer::ResetDevice()
 
     m_iBufferWidth = m_d3dPP.BackBufferWidth;
     m_iBufferHeight = m_d3dPP.BackBufferHeight;
+    //MessageBox(NULL, L"a", L"a", 1L);
+    rl::SetWindowSize(m_d3dPP.BackBufferWidth, m_d3dPP.BackBufferHeight);
     m_bIsDeviceValid = true;
     return S_OK;
 }
@@ -247,19 +252,23 @@ HRESULT D3D9Renderer::DrawRect( float x, float y, float cx, float cy, DWORD colo
 HRESULT D3D9Renderer::DrawRect( float x, float y, float cx, float cy,
                                 DWORD c1, DWORD c2, DWORD c3, DWORD c4 )
 {
-    x -= 0.5f;
-    y -= 0.5f;
 
     SCREEN_VERTEX vertices[6] =
     {
-        x,  y,            0.5f, 1.0f, c1,
-        x + cx, y,        0.5f, 1.0f, c2,
-        x + cx, y + cy,   0.5f, 1.0f, c3,
-        x,  y,            0.5f, 1.0f, c1,
-        x + cx, y + cy,   0.5f, 1.0f, c3,
-        x,  y + cy,       0.5f, 1.0f, c4
+        x - 0.5f,  y - 0.5f,            0.5f, 1.0f, c1, // top left
+        x + cx - 0.5f, y - 0.5f,        0.5f, 1.0f, c2, // top right
+        x + cx - 0.5f, y + cy - 0.5f,   0.5f, 1.0f, c3, // bottom right
+        x - 0.5f,  y - 0.5f,            0.5f, 1.0f, c1, // top left
+        x + cx - 0.5f, y + cy - 0.5f,   0.5f, 1.0f, c3, // bottom right
+        x - 0.5f,  y + cy - 0.5f,       0.5f, 1.0f, c4  // bottom left
     };
 
+    rl::DrawRectangleGradientEx(align_rectangle({ x, y, cx, cy }),
+        int_to_color(c1),
+        int_to_color(c4),
+        int_to_color(c3),
+        int_to_color(c2)
+    );
     return Blit( vertices, 2 );
 }
 
@@ -280,23 +289,24 @@ HRESULT D3D9Renderer::DrawSkew( float x1, float y1, float x2, float y2, float x3
         x3 - 0.5f, y3 - 0.5f, 0.5f, 1.0f, c3,
         x4 - 0.5f, y4 - 0.5f, 0.5f, 1.0f, c4
     };
-
+    draw_triangle_gradient({ x1, y1 }, { x3, y3 }, { x2, y2 }, int_to_color(c1), int_to_color(c3), int_to_color(c2));
+    draw_triangle_gradient({ x1, y1 }, { x4, y4 }, { x3, y3 }, int_to_color(c1), int_to_color(c4), int_to_color(c3));
     return Blit( vertices, 2 );
 }
 
 HRESULT D3D9Renderer::Blit( SCREEN_VERTEX *vertices, int iTriangles )
 {
-    if ( m_bStatic )
-    {
-        memcpy( m_pStaticVertexData + m_iStaticTriangle * 3 * sizeof( SCREEN_VERTEX ), vertices, iTriangles * 3 * sizeof( SCREEN_VERTEX ) );
-        m_iStaticTriangle += 2;
-    }
-    else
-    {
-        PrepBuffer( iTriangles );
-        memcpy( m_pVertexData + m_iTriangle * 3 * sizeof( SCREEN_VERTEX ), vertices, iTriangles * 3 * sizeof( SCREEN_VERTEX ) );
-        m_iTriangle += 2;
-    }
+    //if ( m_bStatic )
+    //{
+    //    memcpy( m_pStaticVertexData + m_iStaticTriangle * 3 * sizeof( SCREEN_VERTEX ), vertices, iTriangles * 3 * sizeof( SCREEN_VERTEX ) );
+    //    m_iStaticTriangle += 2;
+    //}
+    //else
+    //{
+    //    PrepBuffer( iTriangles );
+    //    memcpy( m_pVertexData + m_iTriangle * 3 * sizeof( SCREEN_VERTEX ), vertices, iTriangles * 3 * sizeof( SCREEN_VERTEX ) );
+    //    m_iTriangle += 2;
+    //}
     return S_OK;
 }
 

@@ -14,6 +14,7 @@
 #include "GameState.h"
 #include "Config.h"
 #include "resource.h"
+#include "RaylibHelper.h"
 
 const wstring GameState::Errors[] =
 {
@@ -332,16 +333,25 @@ const float SplashScreen::SharpRatio = 0.65f;
 GameState::GameError SplashScreen::Render()
 {
     if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
-
     // Clear the backbuffer to a blue color
     m_pRenderer->Clear( D3DCOLOR_XRGB( 0, 0, 0 ) );
 
     m_pRenderer->BeginScene();
+
+    //dx9
     m_pRenderer->DrawRect( 0.0f, 0.0f, static_cast< float >( m_pRenderer->GetBufferWidth() ),
                            static_cast< float >( m_pRenderer->GetBufferHeight() ), 0x00000000 );
+    //rl
+    //rl::DrawRectangleRec({
+    //    0.0f, 0.0f, static_cast<float>(m_pRenderer->GetBufferWidth()),
+    //            static_cast<float>(m_pRenderer->GetBufferHeight())
+    //    }, { 0, 0, 0, 0 });
+    rl::ClearBackground(rl::BLACK);
+    //MessageBox(NULL, L"Meow", L"Woof", 1L);
     RenderNotes();
-    m_pRenderer->EndScene();
+    //rl::DrawText("Please work", 100, 100, 20, rl::WHITE);
 
+    m_pRenderer->EndScene();
     // Present the backbuffer contents to the display
     m_pRenderer->Present();
     return Success;
@@ -470,6 +480,11 @@ void SplashScreen::RenderNote( int iPos )
     m_pRenderer->DrawRect( x + fDeflate, y - cy + fDeflate,
                             cx - fDeflate * 2.0f, cy - fDeflate * 2.0f,
                             csTrack.iPrimaryRGB | iAlpha1, csTrack.iDarkRGB | iAlpha1, csTrack.iDarkRGB | iAlpha2, csTrack.iPrimaryRGB | iAlpha2 );
+    //rl::DrawRectangle(x, y - cy, cx, cy, int_to_color(csTrack.iVeryDarkRGB));
+    //rl::DrawRectangleGradientH(x + fDeflate, y - cy + fDeflate,
+    //    cx - fDeflate * 2.0f, cy - fDeflate * 2.0f,
+    //    int_to_color(csTrack.iPrimaryRGB), int_to_color(csTrack.iDarkRGB)
+    //);
 }
 
 float SplashScreen::GetNoteX( int iNote )
@@ -1272,6 +1287,7 @@ GameState::GameError MainScreen::Render()
     if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
 
     m_pRenderer->Clear( 0x00000000 );
+    rl::ClearBackground(rl::BLACK);
 
     m_pRenderer->BeginScene();
     RenderLines();
@@ -1712,7 +1728,7 @@ void MainScreen::RenderText()
     if ( m_bShowFPS ) iLines++;
 
     // Screen info
-    RECT rcStatus = { m_pRenderer->GetBufferWidth() - 156, 0, m_pRenderer->GetBufferWidth(), 6 + 16 * iLines };
+    RECT rcStatus = { m_pRenderer->GetBufferWidth() - 250, 0, m_pRenderer->GetBufferWidth(), 6 + 22 * iLines };
 
     int iMsgCY = 200;
     RECT rcMsg = { 0, static_cast< int >( m_pRenderer->GetBufferHeight() * ( 1.0f - KBPercent ) - iMsgCY ) / 2 };
@@ -1730,7 +1746,7 @@ void MainScreen::RenderText()
     // Draw the text
     m_pRenderer->BeginText();
 
-    RenderStatus( &rcStatus );    
+    RenderStatus( &rcStatus );
     if ( m_bZoomMove )
         RenderMessage( &rcMsg, TEXT( "- Left-click and drag to move the screen\n- Right-click and drag to zoom horizontally\n- Press Escape to abort changes\n- Press Ctrl+V to save changes" ) );
     
@@ -1741,6 +1757,7 @@ void MainScreen::RenderStatus( LPRECT prcStatus )
 {
     // Build the time text
     TCHAR sTime[128];
+    char cTime[128];
     const MIDI::MIDIInfo &mInfo = m_MIDI.GetInfo();
     if ( m_llStartTime >= 0 )
         _stprintf_s( sTime, TEXT( "%lld:%04.1lf / %lld:%04.1lf" ),
@@ -1750,30 +1767,46 @@ void MainScreen::RenderStatus( LPRECT prcStatus )
         _stprintf_s( sTime, TEXT( "\t-%lld:%04.1lf / %lld:%04.1lf" ),
             -m_llStartTime / 60000000, ( -m_llStartTime % 60000000 ) / 1000000.0,
             mInfo.llTotalMicroSecs / 60000000, ( mInfo.llTotalMicroSecs % 60000000 ) / 1000000.0 );
+    wcstombs(cTime, sTime, 128);
+    int cTime_measured = rl::MeasureText(cTime, 20);
 
     // Build the FPS text
     TCHAR sFPS[128];
+    char cFPS[128];
     _stprintf_s( sFPS, TEXT( "%.1lf" ), m_dFPS );
-    
+    wcstombs(cFPS, sFPS, 128);
+    int cFPS_measured = rl::MeasureText(cFPS, 20);
 
     // Display the text
     InflateRect( prcStatus, -6, -3 );
 
     OffsetRect( prcStatus, 2, 1 );
-    m_pRenderer->DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
-    m_pRenderer->DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
+    //m_pRenderer->DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
+    //m_pRenderer->DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
+    rl::DrawText("Time:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
+    rl::DrawText(cTime, (int)prcStatus->right - cTime_measured, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
+
     OffsetRect( prcStatus, -2, -1 );
-    m_pRenderer->DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
-    m_pRenderer->DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
+    //m_pRenderer->DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
+    //m_pRenderer->DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
+    rl::DrawText("Time:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
+    rl::DrawText(cTime, (int)prcStatus->right - cTime_measured, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
+    //rl::DrawFPS(69, 69);
+
+    //MessageBoxA(NULL, cTime, cFPS, 1);
 
     if ( m_bShowFPS )
     {
-        OffsetRect( prcStatus, 2, 16 + 1 );
-        m_pRenderer->DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
-        m_pRenderer->DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
+        OffsetRect( prcStatus, 2, 20 + 2 );
+        //m_pRenderer->DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
+        //m_pRenderer->DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
+        rl::DrawText("FPS:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
+        rl::DrawText(cFPS, (int)prcStatus->right - cFPS_measured, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
         OffsetRect( prcStatus, -2, -1 );
-        m_pRenderer->DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
-        m_pRenderer->DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
+        //m_pRenderer->DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
+        //m_pRenderer->DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
+        rl::DrawText("FPS:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
+        rl::DrawText(cFPS, (int)prcStatus->right - cFPS_measured, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
     }
 }
 
@@ -1781,16 +1814,17 @@ void MainScreen::RenderMessage( LPRECT prcMsg, TCHAR *sMsg )
 {
     RECT rcMsg = { 0 };
     Renderer::FontSize eFontSize = Renderer::Medium;
-    m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
+    //m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
+
     if ( rcMsg.right > m_pRenderer->GetBufferWidth() )
     {
         eFontSize = Renderer::Small;
-        m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
+        //m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
     }
     
     OffsetRect( &rcMsg, 2 + prcMsg->left + ( prcMsg->right - prcMsg->left - rcMsg.right ) / 2,
                 2 + prcMsg->top + ( prcMsg->bottom - prcMsg->top - rcMsg.bottom ) / 2 );
-    m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFF404040 );
+    //m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFF404040 );
     OffsetRect( &rcMsg, -2, -2 );
-    m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFFFFFFFF );
+    //m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFFFFFFFF );
 }

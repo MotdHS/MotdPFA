@@ -25,8 +25,10 @@
 #define CLASSNAME  TEXT( "PianoFromAbove" )
 #define GFXCLASSNAME  TEXT( "PianoFromAboveGfx" )
 #define POSNCLASSNAME  TEXT( "PianoFromAbovePosCtrl" )
-#define MINWIDTH 640
-#define MINHEIGHT 469
+#define MINWIDTH 320
+#define MINHEIGHT 180
+
+extern const char *config_filename;
 
 class ISettings;
 class Config;

@@ -20,6 +20,8 @@ using namespace std;
 // Main Config class
 //-----------------------------------------------------------------------------
 
+const char *config_filename = "\\Config_MotdPFA.xml";
+
 Config &Config::GetConfig()
 {
     static Config instance;
@@ -66,7 +68,7 @@ void Config::LoadConfigValues()
     if ( sPath.length() == 0 ) return;
 
     // Load it
-    TiXmlDocument doc( sPath + "\\Config.xml" );
+    TiXmlDocument doc( sPath + config_filename );
     if ( !doc.LoadFile() ) return;
 
     // Get the root element
@@ -104,7 +106,7 @@ bool Config::SaveConfigValues()
     SaveConfigValues( txRoot );
 
     // Write it!
-    return doc.SaveFile( sPath + "\\Config.xml" );
+    return doc.SaveFile( sPath + config_filename );
 }
 
 bool Config::SaveConfigValues( TiXmlElement *txRoot )

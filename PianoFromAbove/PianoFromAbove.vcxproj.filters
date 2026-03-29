@@ -22,9 +22,6 @@
     <Filter Include="Header Files\TinyXML">
       <UniqueIdentifier>{28f621df-e589-41be-970e-ea341e164d5b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game">
-      <UniqueIdentifier>{f2900634-e42d-4bc1-a684-b46d4fc32d2c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\TinyXML">
       <UniqueIdentifier>{63c847cc-04fa-43f9-ab47-d46f04e480ae}</UniqueIdentifier>
     </Filter>
@@ -36,6 +33,15 @@
     </Filter>
     <Filter Include="Header Files\ProtoBuf">
       <UniqueIdentifier>{4a261048-6f91-405a-955c-9ed2ed8a6cb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{f2900634-e42d-4bc1-a684-b46d4fc32d2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helpers">
+      <UniqueIdentifier>{2a6facd2-48a0-431c-8abb-6346dd52d827}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helpers">
+      <UniqueIdentifier>{1b805467-a6ab-4bd9-9eda-fe714b7f4cc9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +80,9 @@
     </ClInclude>
     <ClInclude Include="ProtoBuf\MetaData.pb.h">
       <Filter>Header Files\ProtoBuf</Filter>
+    </ClInclude>
+    <ClInclude Include="RaylibHelper.h">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +129,9 @@
     </ClCompile>
     <ClCompile Include="ProtoBuf\MetaData.pb.cc">
       <Filter>Source Files\ProtoBuf</Filter>
+    </ClCompile>
+    <ClCompile Include="RaylibHelper.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
