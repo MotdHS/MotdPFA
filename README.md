@@ -8,12 +8,13 @@ This is based on the `viz` branch of Piano From Above, which just removes the "l
 <sub>Please note that I am a beginner at C/C++ and don't know what I am doing at all (?)</sub>
 
 ## Differences from original PFA
-- none yet
+- Uses raylib instead of DirectX 9
 
 ## To-Do
+- Finish removing DirectX 9
 - Remove the protobuf dependency
-- Switch graphics library
 - Switch to CMake (probably)
+- Linux compatibility?
 
 ## How to build
 **NOTE**: Direct X SDK and Protobuf will no longer be needed in the future, but for now, they are required.
