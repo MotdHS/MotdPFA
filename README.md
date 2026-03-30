@@ -1,7 +1,7 @@
 # MotdPFA
 Welcome to MotdHS's mod of Piano From Above!
 
-Not much has been done yet, but I am planning on experimenting with some stuff, maybe even trying to switch the graphics library because it's currently using the legacy DirectX 9 SDK.
+Not much has been done yet, but I am planning on experimenting with some stuff.
 
 This is based on the `viz` branch of Piano From Above, which just removes the "learning" features.
 
