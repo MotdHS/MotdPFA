@@ -14,7 +14,6 @@
 #include <string>
 using namespace std;
 
-#include "ProtoBuf\MetaData.pb.h"
 #include "RaylibHelper.h"
 //#include "Renderer.h"
 #include "MIDI.h"
