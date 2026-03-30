@@ -11,18 +11,17 @@ This is based on the `viz` branch of Piano From Above, which just removes the "l
 - Uses raylib instead of DirectX 9
 
 ## To-Do
-- Finish removing DirectX 9
-- Remove the protobuf dependency
+- Remove library (to get rid of the protobuf dependency)
+- Switch to Clang
 - Switch to CMake (probably)
 - Linux compatibility?
 
 ## How to build
-**NOTE**: Direct X SDK and Protobuf will no longer be needed in the future, but for now, they are required.
+**NOTE**: Protobuf will no longer be needed in the future, but for now, they are required.
 
 - Clone this repository
 - Download and install Visual Studio Community 2026
   - If this version has issues, try the Insiders version.
-- Download and install Direct X SDK
 - Download and extract Google Protocol Buffers 2.5
   - In the `vsprojects` folder, run `extract_includes.bat`
   - Open `libprotobuf-lite.vcproj`

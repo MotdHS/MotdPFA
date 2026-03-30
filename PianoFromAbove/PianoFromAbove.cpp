@@ -17,7 +17,8 @@
 
 #include "Config.h"
 #include "GameState.h"
-#include "Renderer.h"
+//#include "Renderer.h"
+#include "RaylibHelper.h"
 #include "Misc.h"
 
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, INT nCmdShow );
@@ -130,7 +131,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
     if ( !hAccel ) return 1;
 
     // Get the game going
-    HANDLE hThread = CreateThread( NULL, 0, GameThread, new SplashScreen( NULL, NULL ), 0, NULL );
+    HANDLE hThread = CreateThread( NULL, 0, GameThread, new SplashScreen( NULL ), 0, NULL );
     if ( !hThread ) return 1;
 
     // Set up GUI and show

@@ -75,7 +75,7 @@ LRESULT WINAPI WndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
                     cPlayback.SetPlayable( SendMessage( hWndLib, LVM_GETNEXTITEM, -1, LVNI_SELECTED ) >= 0, true );
                     cPlayback.SetPosition( 0 );
                     SetWindowText( g_hWnd, TEXT( APPNAME ) );
-                    HandOffMsg( WM_COMMAND, ID_CHANGESTATE, ( LPARAM )new IntroScreen( NULL, NULL ) );
+                    HandOffMsg( WM_COMMAND, ID_CHANGESTATE, ( LPARAM )new IntroScreen( NULL ) );
                     return 0;
                 }
                 case ID_FILE_ADDFILE:
@@ -1611,7 +1611,7 @@ BOOL PlayFile( const wstring &sFile, bool bCustomSettings, bool bLibraryEligible
 
     // Try loading the file
     MainScreen *pGameState = NULL;
-    pGameState = new MainScreen( sFile, ePlayMode, NULL, NULL );
+    pGameState = new MainScreen( sFile, ePlayMode, NULL );
     if ( !pGameState->IsValid() )
     {
         MessageBox( g_hWnd, ( L"Was not able to load " + sFile ).c_str(), TEXT( "Error" ), MB_OK | MB_ICONEXCLAMATION );

@@ -36,14 +36,13 @@ GameState::GameError GameState::ChangeState( GameState *pNextState, GameState **
     if ( *pDestObj )
     {
         if ( !pNextState->m_hWnd ) pNextState->m_hWnd = ( *pDestObj )->m_hWnd;
-        if ( !pNextState->m_pRenderer ) pNextState->m_pRenderer = ( *pDestObj )->m_pRenderer;
         delete *pDestObj;
     }
     *pDestObj = pNextState;
     GameError iResult = pNextState->Init();
     if ( iResult )
     {
-        *pDestObj = new IntroScreen( pNextState->m_hWnd, pNextState->m_pRenderer );
+        *pDestObj = new IntroScreen( pNextState->m_hWnd );
         delete pNextState;
         ( *pDestObj )->Init();
         return iResult;
@@ -95,18 +94,18 @@ GameState::GameError IntroScreen::Logic()
 
 GameState::GameError IntroScreen::Render()
 {
-    //if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
+    //if ( FAILED( rlc::ResetDeviceIfNeeded() ) ) return DirectXError;
 
     //// Clear the backbuffer to a blue color
-    //m_pRenderer->Clear( D3DCOLOR_XRGB( 0, 0, 0 ) );
+    //rlc::Clear( D3DCOLOR_XRGB( 0, 0, 0 ) );
 
-    //m_pRenderer->BeginScene();
-    //m_pRenderer->DrawRect( 0.0f, 0.0f, static_cast< float >( m_pRenderer->GetBufferWidth() ),
-    //                       static_cast< float >( m_pRenderer->GetBufferHeight() ), 0x00000000 );
-    //m_pRenderer->EndScene();
+    //rlc::BeginScene();
+    //rlc::DrawRect( 0.0f, 0.0f, static_cast< float >( rlc::GetBufferWidth() ),
+    //                       static_cast< float >( rlc::GetBufferHeight() ), 0x00000000 );
+    //rlc::EndScene();
 
     //// Present the backbuffer contents to the display
-    //m_pRenderer->Present();
+    //rlc::Present();
     rl::ClearBackground(rl::BLACK);
     return Success;
 }
@@ -115,7 +114,7 @@ GameState::GameError IntroScreen::Render()
 // SplashScreen GameState object
 //-----------------------------------------------------------------------------
 
-SplashScreen::SplashScreen( HWND hWnd, Renderer *pRenderer ) : GameState( hWnd, pRenderer ) 
+SplashScreen::SplashScreen( HWND hWnd ) : GameState( hWnd ) 
 {
     HRSRC hResInfo = FindResource( NULL, MAKEINTRESOURCE( IDR_SPLASHMIDI ), TEXT( "MIDI" ) );
     HGLOBAL hRes = LoadResource( NULL, hResInfo );
@@ -341,28 +340,28 @@ const float SplashScreen::SharpRatio = 0.65f;
 
 GameState::GameError SplashScreen::Render()
 {
-    //if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
+    //if ( FAILED( rlc::ResetDeviceIfNeeded() ) ) return DirectXError;
     // Clear the backbuffer to a blue color
-    //m_pRenderer->Clear( D3DCOLOR_XRGB( 0, 0, 0 ) );
+    //rlc::Clear( D3DCOLOR_XRGB( 0, 0, 0 ) );
 
-    //m_pRenderer->BeginScene();
+    //rlc::BeginScene();
 
     ////dx9
-    //m_pRenderer->DrawRect( 0.0f, 0.0f, static_cast< float >( m_pRenderer->GetBufferWidth() ),
-    //                       static_cast< float >( m_pRenderer->GetBufferHeight() ), 0x00000000 );
+    //rlc::DrawRect( 0.0f, 0.0f, static_cast< float >( rlc::GetBufferWidth() ),
+    //                       static_cast< float >( rlc::GetBufferHeight() ), 0x00000000 );
     //rl
     //rl::DrawRectangleRec({
-    //    0.0f, 0.0f, static_cast<float>(m_pRenderer->GetBufferWidth()),
-    //            static_cast<float>(m_pRenderer->GetBufferHeight())
+    //    0.0f, 0.0f, static_cast<float>(rlc::GetBufferWidth()),
+    //            static_cast<float>(rlc::GetBufferHeight())
     //    }, { 0, 0, 0, 0 });
     rl::ClearBackground(rl::BLACK);
     //MessageBox(NULL, L"Meow", L"Woof", 1L);
     RenderNotes();
     //rl::DrawText("Please work", 100, 100, 20, rl::WHITE);
 
-    //m_pRenderer->EndScene();
+    //rlc::EndScene();
     //// Present the backbuffer contents to the display
-    //m_pRenderer->Present();
+    //rlc::Present();
     return Success;
 }
 
@@ -375,9 +374,9 @@ void SplashScreen::RenderGlobals()
 
     // Screen info
     m_fNotesX = 0.0f;
-    m_fNotesCX = static_cast< float >( m_pRenderer->GetBufferWidth() );
+    m_fNotesCX = static_cast< float >( rlc::GetBufferWidth() );
     m_fNotesY = 0.0f;
-    m_fNotesCY = static_cast< float >( m_pRenderer->GetBufferHeight() );
+    m_fNotesCY = static_cast< float >( rlc::GetBufferHeight() );
 
     // Keys info
     m_iAllWhiteKeys = MIDI::WhiteCount( m_iStartNote, m_iEndNote + 1 );
@@ -485,8 +484,8 @@ void SplashScreen::RenderNote( int iPos )
     iAlpha <<= 24;
     iAlpha1 <<= 24;
     iAlpha2 <<= 24;
-    //m_pRenderer->DrawRect( x, y - cy, cx, cy, csTrack.iVeryDarkRGB | iAlpha );
-    //m_pRenderer->DrawRect( x + fDeflate, y - cy + fDeflate,
+    //rlc::DrawRect( x, y - cy, cx, cy, csTrack.iVeryDarkRGB | iAlpha );
+    //rlc::DrawRect( x + fDeflate, y - cy + fDeflate,
     //                        cx - fDeflate * 2.0f, cy - fDeflate * 2.0f,
     //                        csTrack.iPrimaryRGB | iAlpha1, csTrack.iDarkRGB | iAlpha1, csTrack.iDarkRGB | iAlpha2, csTrack.iPrimaryRGB | iAlpha2 );
     rl::DrawRectangleRec(rl::AlignRectangle({ x, y - cy, cx, cy }), rl::IntToColor(csTrack.iVeryDarkRGB | iAlpha));
@@ -519,8 +518,8 @@ float SplashScreen::GetNoteX( int iNote )
 // MainScreen GameState object
 //-----------------------------------------------------------------------------
 
-MainScreen::MainScreen( wstring sMIDIFile, State eGameMode, HWND hWnd, Renderer *pRenderer ) :
-    GameState( hWnd, pRenderer ), m_MIDI( sMIDIFile ), m_eGameMode( eGameMode )
+MainScreen::MainScreen( wstring sMIDIFile, State eGameMode, HWND hWnd ) :
+    GameState( hWnd ), m_MIDI( sMIDIFile ), m_eGameMode( eGameMode )
 {
     // Finish off midi processing
     if ( !m_MIDI.IsValid() ) return;
@@ -1303,22 +1302,22 @@ const float MainScreen::KeyRatio = 0.1775f;
 
 GameState::GameError MainScreen::Render() 
 {
-    //if ( FAILED( m_pRenderer->ResetDeviceIfNeeded() ) ) return DirectXError;
+    //if ( FAILED( rlc::ResetDeviceIfNeeded() ) ) return DirectXError;
 
-    //m_pRenderer->Clear( 0x00000000 );
+    //rlc::Clear( 0x00000000 );
     rl::ClearBackground(rl::BLACK);
 
-    //m_pRenderer->BeginScene();
+    //rlc::BeginScene();
     RenderLines();
     RenderNotes();
     if ( m_bShowKB )
         RenderKeys();
     RenderBorder();
     RenderText();
-    //m_pRenderer->EndScene();
+    //rlc::EndScene();
 
     // Present the backbuffer contents to the display
-    //m_pRenderer->Present();
+    //rlc::Present();
     return Success;
 }
 
@@ -1341,7 +1340,7 @@ void MainScreen::RenderGlobals()
 
     // Screen X info
     m_fNotesX = m_fOffsetX + m_fTempOffsetX;
-    m_fNotesCX = m_pRenderer->GetBufferWidth() * m_fZoomX * m_fTempZoomX;
+    m_fNotesCX = rlc::GetBufferWidth() * m_fZoomX * m_fTempZoomX;
 
     // Keys info
     m_iAllWhiteKeys = MIDI::WhiteCount( m_iStartNote, m_iEndNote + 1 );
@@ -1352,14 +1351,14 @@ void MainScreen::RenderGlobals()
     // Screen Y info
     m_fNotesY = m_fOffsetY + m_fTempOffsetY;
     if ( !m_bShowKB )
-        m_fNotesCY = static_cast< float >( m_pRenderer->GetBufferHeight() );
+        m_fNotesCY = static_cast< float >( rlc::GetBufferHeight() );
     else
     {
-        float fMaxKeyCY = m_pRenderer->GetBufferHeight() * KBPercent;
+        float fMaxKeyCY = rlc::GetBufferHeight() * KBPercent;
         float fIdealKeyCY = m_fWhiteCX / KeyRatio;
         // .95 for the top vs near. 2.0 for the spacer. .93 for the transition and the red. ESTIMATE.
         fIdealKeyCY = ( fIdealKeyCY / 0.95f + 2.0f ) / 0.93f;
-        m_fNotesCY = floor( m_pRenderer->GetBufferHeight() - min( fIdealKeyCY, fMaxKeyCY ) + 0.5f );
+        m_fNotesCY = floor( rlc::GetBufferHeight() - min( fIdealKeyCY, fMaxKeyCY ) + 0.5f );
     }
 
     // Round down start time. This is only used for rendering purposes
@@ -1370,7 +1369,7 @@ void MainScreen::RenderGlobals()
 
 void MainScreen::RenderLines()
 {
-    //m_pRenderer->DrawRect( m_fNotesX, m_fNotesY, m_fNotesCX, m_fNotesCY, m_csBackground.iPrimaryRGB );
+    //rlc::DrawRect( m_fNotesX, m_fNotesY, m_fNotesCX, m_fNotesCY, m_csBackground.iPrimaryRGB );
     rl::DrawRectangleRec(
         rl::AlignRectangle({ m_fNotesX, m_fNotesY, m_fNotesCX, m_fNotesCY }),
         rl::IntToColor(m_csBackground.iPrimaryRGB)
@@ -1560,7 +1559,7 @@ void MainScreen::RenderKeys()
 {
     // Screen info
     float fKeysY = m_fNotesY + m_fNotesCY;
-    float fKeysCY = m_pRenderer->GetBufferHeight() - m_fNotesCY;
+    float fKeysCY = rlc::GetBufferHeight() - m_fNotesCY;
 
     float fTransitionPct = .02f;
     float fTransitionCY = max( 3.0f, floor( fKeysCY * fTransitionPct + 0.5f ) );
@@ -1609,7 +1608,7 @@ void MainScreen::RenderKeys()
                     float fMXGap = floor( m_fWhiteCX * 0.25f + 0.5f );
                     float fMCX = m_fWhiteCX - fMXGap * 2.0f - fKeyGap;
                     float fMY = max( fCurY + fTopCY - fMCX - 5.0f, fCurY + fSharpCY + 5.0f );
-                    //m_pRenderer->DrawRect( fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY - 5.0f - fMY, m_csKBWhite.iDarkRGB );
+                    //rlc::DrawRect( fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY - 5.0f - fMY, m_csKBWhite.iDarkRGB );
                     rl::DrawRectangleRec(
                         { fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY - 5.0f - fMY },
                         rl::IntToColor(m_csKBWhite.iDarkRGB)
@@ -1732,7 +1731,7 @@ void MainScreen::RenderBorder()
 {
     // Top, bottom, left, right
     const unsigned iBlack = 0x00000000;
-    float fBufferCY = static_cast< float >( m_pRenderer->GetBufferHeight() );
+    float fBufferCY = static_cast< float >( rlc::GetBufferHeight() );
     rlc::DrawRect( m_fNotesX - 50.0f, m_fNotesY - 50.0f, m_fNotesCX + 100.0f, 50.0f, iBlack );
     rlc::DrawRect( m_fNotesX - 50.0f, m_fNotesY + fBufferCY, m_fNotesCX + 100.0f, 50.0f, iBlack );
     rlc::DrawRect( m_fNotesX - m_fWhiteCX, m_fNotesY - 50.0f, m_fWhiteCX, fBufferCY + 100.0f, iBlack );
@@ -1776,13 +1775,13 @@ void MainScreen::RenderText()
             static_cast< float >( rcMsg.right - rcMsg.left ), static_cast< float >( rcMsg.bottom - rcMsg.top ), iBkgColor );
 
     // Draw the text
-    //m_pRenderer->BeginText();
+    //rlc::BeginText();
 
     RenderStatus( &rcStatus );
     if ( m_bZoomMove )
         RenderMessage( &rcMsg, TEXT( "- Left-click and drag to move the screen\n- Right-click and drag to zoom horizontally\n- Press Escape to abort changes\n- Press Ctrl+V to save changes" ) );
     
-    //m_pRenderer->EndText();
+    //rlc::EndText();
 }
 
 void MainScreen::RenderStatus( LPRECT prcStatus )
@@ -1813,14 +1812,14 @@ void MainScreen::RenderStatus( LPRECT prcStatus )
     InflateRect( prcStatus, -6, -3 );
 
     OffsetRect( prcStatus, 2, 1 );
-    //m_pRenderer->DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
-    //m_pRenderer->DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
+    //rlc::DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
+    //rlc::DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
     rl::DrawText("Time:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
     rl::DrawText(cTime, (int)prcStatus->right - cTime_measured, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
 
     OffsetRect( prcStatus, -2, -1 );
-    //m_pRenderer->DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
-    //m_pRenderer->DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
+    //rlc::DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
+    //rlc::DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
     rl::DrawText("Time:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
     rl::DrawText(cTime, (int)prcStatus->right - cTime_measured, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
     //rl::DrawFPS(69, 69);
@@ -1830,13 +1829,13 @@ void MainScreen::RenderStatus( LPRECT prcStatus )
     if ( m_bShowFPS )
     {
         OffsetRect( prcStatus, 2, 20 + 2 );
-        //m_pRenderer->DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
-        //m_pRenderer->DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
+        //rlc::DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
+        //rlc::DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
         rl::DrawText("FPS:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
         rl::DrawText(cFPS, (int)prcStatus->right - cFPS_measured, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
         OffsetRect( prcStatus, -2, -1 );
-        //m_pRenderer->DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
-        //m_pRenderer->DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
+        //rlc::DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
+        //rlc::DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
         rl::DrawText("FPS:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
         rl::DrawText(cFPS, (int)prcStatus->right - cFPS_measured, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
     }
@@ -1845,18 +1844,18 @@ void MainScreen::RenderStatus( LPRECT prcStatus )
 void MainScreen::RenderMessage( LPRECT prcMsg, TCHAR *sMsg )
 {
     RECT rcMsg = { 0 };
-    Renderer::FontSize eFontSize = Renderer::Medium;
-    //m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
+    //Renderer::FontSize eFontSize = Renderer::Medium;
+    ////rlc::DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
 
-    if ( rcMsg.right > m_pRenderer->GetBufferWidth() )
-    {
-        eFontSize = Renderer::Small;
-        //m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
-    }
+    //if ( rcMsg.right > rlc::GetBufferWidth() )
+    //{
+    //    eFontSize = Renderer::Small;
+    //    //rlc::DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
+    //}
     
     OffsetRect( &rcMsg, 2 + prcMsg->left + ( prcMsg->right - prcMsg->left - rcMsg.right ) / 2,
                 2 + prcMsg->top + ( prcMsg->bottom - prcMsg->top - rcMsg.bottom ) / 2 );
-    //m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFF404040 );
+    //rlc::DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFF404040 );
     OffsetRect( &rcMsg, -2, -2 );
-    //m_pRenderer->DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFFFFFFFF );
+    //rlc::DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFFFFFFFF );
 }

@@ -15,7 +15,8 @@
 using namespace std;
 
 #include "ProtoBuf\MetaData.pb.h"
-#include "Renderer.h"
+#include "RaylibHelper.h"
+//#include "Renderer.h"
 #include "MIDI.h"
 #include "Misc.h"
 
@@ -31,7 +32,7 @@ public:
     static GameError ChangeState( GameState *pNextState, GameState **pDestObj );
 
     //Constructors
-    GameState( HWND hWnd, Renderer *pRenderer ) : m_hWnd( hWnd ), m_pRenderer( pRenderer ), m_pNextState( NULL ) {};
+    GameState( HWND hWnd ) : m_hWnd( hWnd ), m_pNextState( NULL ) {};
     virtual ~GameState( void ) {};
 
     // Initialize after all other game states have been deleted
@@ -50,14 +51,10 @@ public:
     GameState *NextState() { return m_pNextState; };
 
     void SetHWnd( HWND hWnd ) { m_hWnd = hWnd; }
-    void SetRenderer( Renderer *pRenderer ) { m_pRenderer = pRenderer; }
 
 protected:
     //Windows info
     HWND m_hWnd;
-
-    //Rendering device
-    Renderer *m_pRenderer;
 
     GameState *m_pNextState;
 
@@ -78,7 +75,7 @@ struct TrackSettings { ChannelSettings aChannels[16]; };
 class SplashScreen : public GameState
 {
 public:
-    SplashScreen( HWND hWnd, Renderer *pRenderer );
+    SplashScreen( HWND hWnd );
 
     GameError MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
     GameError Init();
@@ -127,7 +124,7 @@ private:
 class IntroScreen : public GameState
 {
 public:
-    IntroScreen( HWND hWnd, Renderer *pRenderer ) : GameState( hWnd, pRenderer ) {}
+    IntroScreen( HWND hWnd ) : GameState( hWnd ) {}
 
     GameError MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
     GameError Init();
@@ -140,7 +137,7 @@ class MainScreen : public GameState
 public:
     static const float KBPercent;
 
-    MainScreen( wstring sMIDIFile, State eGameMode, HWND hWnd, Renderer *pRenderer );
+    MainScreen( wstring sMIDIFile, State eGameMode, HWND hWnd );
 
     // GameState functions
     GameError MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
