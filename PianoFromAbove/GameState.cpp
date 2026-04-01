@@ -1751,6 +1751,7 @@ void MainScreen::RenderText()
     right_text_height = 0;
     // Draw the text
     RenderStatus();
+    RenderMessage({ {rl::TextFormat("MotdPFA %s", VERSION), rl::WHITE} });
     if (m_bZoomMove)
         RenderMessage({
             { "- Left-click and drag to move the screen" , rl::WHITE },

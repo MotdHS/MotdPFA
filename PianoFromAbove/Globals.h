@@ -19,3 +19,5 @@ extern HWND g_hWndGfx;
 extern TSQueue< MSG > g_MsgQueue; // Producer/consumer to hold events for our game thread
 
 #define ERRORANDRETURN( hwnd, msg, retval ) { MessageBox( ( hwnd ), ( msg ), TEXT( "Error" ), MB_OK | MB_ICONERROR ); return ( retval ); }
+
+#define VERSION "v1_dev"
