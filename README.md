@@ -10,10 +10,10 @@ This is based on the `viz` branch of Piano From Above, which just removes the "l
 ## Differences from original PFA
 - Uses raylib instead of DirectX 9
 - Removed library panel (no more protobuf dependency :D)
+- Windows ARM64 compatibility *(Untested, doesn't work on my Snapdragon 7c Gen 2 that only supports OpenGL ES)*
 
 ## To-Do
 - Cleanup (probably messy af right now :D)
-- Windows ARM64 compatibility
 - Switch to Clang
 - Switch to CMake (probably)
 - Linux compatibility?
