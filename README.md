@@ -8,14 +8,17 @@ This is based on the `viz` branch of Piano From Above, which just removes the "l
 <sub>Please note that I am a beginner at C/C++ and don't know what I am doing at all (?)</sub>
 
 ## Differences from original PFA
-- Uses raylib instead of DirectX 9
+- Switched from DirectX 9 to raylib (OpenGL)
 - Removed library panel (no more protobuf dependency :D)
 - Windows ARM64 compatibility *(Untested, doesn't work on my Snapdragon 7c Gen 2 that only supports OpenGL ES)*
 
 ## To-Do
 - Cleanup (probably messy af right now :D)
+- Try to switch to Qt or GTK
+- Switch to RtMidi for MIDI output
+- Get rid of `Windows.h`
 - Switch to Clang
-- Switch to CMake (probably)
+- Switch to CMake
 - Linux compatibility?
 
 ## How to build
