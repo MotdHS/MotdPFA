@@ -1302,22 +1302,14 @@ const float MainScreen::KeyRatio = 0.1775f;
 
 GameState::GameError MainScreen::Render() 
 {
-    //if ( FAILED( rlc::ResetDeviceIfNeeded() ) ) return DirectXError;
-
-    //rlc::Clear( 0x00000000 );
     rl::ClearBackground(rl::BLACK);
 
-    //rlc::BeginScene();
     RenderLines();
     RenderNotes();
-    if ( m_bShowKB )
-        RenderKeys();
-    RenderBorder();
+    if ( m_bShowKB ) RenderKeys();
+    //RenderBorder();
     RenderText();
-    //rlc::EndScene();
 
-    // Present the backbuffer contents to the display
-    //rlc::Present();
     return Success;
 }
 
@@ -1385,7 +1377,7 @@ void MainScreen::RenderLines()
             x = floor( x + 0.5f ); // Needs to be rounded because of the gradient
             //rlc::DrawRect( x - 1.0f, m_fNotesY, 3.0f, m_fNotesCY,
             //    m_csBackground.iDarkRGB, m_csBackground.iVeryDarkRGB, m_csBackground.iVeryDarkRGB, m_csBackground.iDarkRGB );
-            rl::DrawRectangleRecGradientH({ x - 1.0f, m_fNotesY, 3.0f, m_fNotesCY },
+            rl::DrawRectangleRecGradientH(rl::AlignRectangle({ x - 1.0f, m_fNotesY, 3.0f, m_fNotesCY }),
                 rl::IntToColor(m_csBackground.iDarkRGB), rl::IntToColor(m_csBackground.iVeryDarkRGB));
         }
 
@@ -1517,8 +1509,8 @@ void MainScreen::RenderNote( int iPos )
     float fDeflate = m_fWhiteCX * 0.15f / 2.0f;
 
     // Rounding to make everything consistent
-    cy = floor( cy + 0.5f ); // constant cy across rendering
-    y = floor( y + 0.5f );
+    //cy = floor( cy + 0.5f ); // constant cy across rendering
+    //y = floor( y + 0.5f );
     fDeflate = floor( fDeflate + 0.5f );
     fDeflate = max( min( fDeflate, 3.0f ), 1.0f );
 
@@ -1536,7 +1528,8 @@ void MainScreen::RenderNote( int iPos )
         y = fMinY + cy;
     }
 
-    rl::DrawRectangleRec({ x, y - cy, cx, cy }, rl::IntToColor(csTrack.iVeryDarkRGB));
+
+    rl::DrawRectangleRec(rl::AlignRectangle({ x, y - cy, cx, max(cy, 1.0f) }), rl::IntToColor(csTrack.iVeryDarkRGB));
     rlc::DrawRect( x + fDeflate, y - cy + fDeflate,
                             cx - fDeflate * 2.0f, cy - fDeflate * 2.0f,
                             csTrack.iPrimaryRGB, csTrack.iDarkRGB, csTrack.iDarkRGB, csTrack.iPrimaryRGB );
@@ -1570,13 +1563,13 @@ void MainScreen::RenderKeys()
     float fNearCY = fKeysCY - fSpacerCY - fRedCY - fTransitionCY - fTopCY;
 
     // Draw the background
-    rl::DrawRectangleRec({ m_fNotesX, fKeysY, m_fNotesCX, fKeysCY },
+    rl::DrawRectangleRec(rl::AlignRectangle({ m_fNotesX, fKeysY, m_fNotesCX, fKeysCY }),
         rl::IntToColor(m_csKBBackground.iVeryDarkRGB));
-    rl::DrawRectangleRecGradientV({ m_fNotesX, fKeysY, m_fNotesCX, fTransitionCY },
+    rl::DrawRectangleRecGradientV(rl::AlignRectangle({ m_fNotesX, fKeysY, m_fNotesCX, fTransitionCY }),
         rl::IntToColor(m_csBackground.iPrimaryRGB), rl::IntToColor(m_csKBBackground.iVeryDarkRGB));
-    rl::DrawRectangleRecGradientV({ m_fNotesX, fKeysY + fTransitionCY, m_fNotesCX , fRedCY },
+    rl::DrawRectangleRecGradientV(rl::AlignRectangle({ m_fNotesX, fKeysY + fTransitionCY, m_fNotesCX , fRedCY }),
         rl::IntToColor(m_csKBRed.iDarkRGB), rl::IntToColor(m_csKBRed.iPrimaryRGB));
-    rl::DrawRectangleRec({ m_fNotesX, fKeysY + fTransitionCY + fRedCY, m_fNotesCX, fSpacerCY },
+    rl::DrawRectangleRec(rl::AlignRectangle({ m_fNotesX, fKeysY + fTransitionCY + fRedCY, m_fNotesCX, fSpacerCY }),
         rl::IntToColor(m_csKBBackground.iDarkRGB));
 
     // Keys info
@@ -1596,21 +1589,21 @@ void MainScreen::RenderKeys()
         {
             if ( m_pNoteState[i] == -1 )
             {
-                rl::DrawRectangleRecGradientV({ fCurX + fKeyGap1 , fCurY, m_fWhiteCX - fKeyGap, fTopCY + fNearCY },
-                    rl::IntToColor(m_csKBWhite.iDarkRGB), rl::IntToColor(m_csKBWhite.iPrimaryRGB ));
-                rl::DrawRectangleRecGradientV({ fCurX + fKeyGap1 , fCurY + fTopCY, m_fWhiteCX - fKeyGap, fNearCY },
-                    rl::IntToColor(m_csKBWhite.iDarkRGB), rl::IntToColor(m_csKBWhite.iVeryDarkRGB ));
-                rl::DrawRectangleRecGradientV({ fCurX + fKeyGap1, fCurY + fTopCY, m_fWhiteCX - fKeyGap, 2.0f },
-                    rl::IntToColor(m_csKBBackground.iDarkRGB), rl::IntToColor(m_csKBWhite.iVeryDarkRGB ));
+                rl::DrawRectangleRecGradientV(rl::AlignRectangle({ fCurX + fKeyGap1 , fCurY, m_fWhiteCX - fKeyGap, fTopCY + fNearCY }),
+                    rl::IntToColor(m_csKBWhite.iDarkRGB), rl::IntToColor(m_csKBWhite.iPrimaryRGB));
+                rl::DrawRectangleRecGradientV(rl::AlignRectangle({ fCurX + fKeyGap1 , fCurY + fTopCY, m_fWhiteCX - fKeyGap, fNearCY }),
+                    rl::IntToColor(m_csKBWhite.iDarkRGB), rl::IntToColor(m_csKBWhite.iVeryDarkRGB));
+                rl::DrawRectangleRecGradientV(rl::AlignRectangle({ fCurX + fKeyGap1, fCurY + fTopCY, m_fWhiteCX - fKeyGap, 2.0f }),
+                    rl::IntToColor(m_csKBBackground.iDarkRGB), rl::IntToColor(m_csKBWhite.iVeryDarkRGB));
 
-                if ( i == MIDI::C4 )
+                if (i == MIDI::C4)
                 {
-                    float fMXGap = floor( m_fWhiteCX * 0.25f + 0.5f );
+                    float fMXGap = floor(m_fWhiteCX * 0.25f + 0.5f);
                     float fMCX = m_fWhiteCX - fMXGap * 2.0f - fKeyGap;
-                    float fMY = max( fCurY + fTopCY - fMCX - 5.0f, fCurY + fSharpCY + 5.0f );
+                    float fMY = max(fCurY + fTopCY - fMCX - 5.0f, fCurY + fSharpCY + 5.0f);
                     //rlc::DrawRect( fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY - 5.0f - fMY, m_csKBWhite.iDarkRGB );
                     rl::DrawRectangleRec(
-                        { fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY - 5.0f - fMY },
+                        rl::AlignRectangle({ fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY - 5.0f - fMY }),
                         rl::IntToColor(m_csKBWhite.iDarkRGB)
                     );
                 }
@@ -1622,9 +1615,9 @@ void MainScreen::RenderKeys()
                 const int iChannel = ( pEvent ? pEvent->GetChannel() : -1 );
 
                 ChannelSettings &csKBWhite = m_vTrackSettings[iTrack].aChannels[iChannel];
-                rl::DrawRectangleRecGradientV({ fCurX + fKeyGap1 , fCurY, m_fWhiteCX - fKeyGap, fTopCY + fNearCY - 2.0f },
+                rl::DrawRectangleRecGradientV(rl::AlignRectangle({ fCurX + fKeyGap1 , fCurY, m_fWhiteCX - fKeyGap, fTopCY + fNearCY - 2.0f }),
                     rl::IntToColor(csKBWhite.iDarkRGB), rl::IntToColor(csKBWhite.iPrimaryRGB));
-                rl::DrawRectangleRec({ fCurX + fKeyGap1 , fCurY + fTopCY + fNearCY - 2.0f, m_fWhiteCX - fKeyGap, 2.0f },
+                rl::DrawRectangleRec(rl::AlignRectangle({ fCurX + fKeyGap1 , fCurY + fTopCY + fNearCY - 2.0f, m_fWhiteCX - fKeyGap, 2.0f }),
                     rl::IntToColor(csKBWhite.iDarkRGB));
 
                 if ( i == MIDI::C4 )
@@ -1632,11 +1625,11 @@ void MainScreen::RenderKeys()
                     float fMXGap = floor( m_fWhiteCX * 0.25f + 0.5f );
                     float fMCX = m_fWhiteCX - fMXGap * 2.0f - fKeyGap;
                     float fMY = max( fCurY + fTopCY + fNearCY - fMCX - 7.0f, fCurY + fSharpCY + 5.0f );
-                    rl::DrawRectangleRec({ fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY + fNearCY - 7.0f - fMY },
+                    rl::DrawRectangleRec(rl::AlignRectangle({ fCurX + fKeyGap1 + fMXGap, fMY, fMCX, fCurY + fTopCY + fNearCY - 7.0f - fMY }),
                         rl::IntToColor(csKBWhite.iDarkRGB));
                 }
             }
-            rl::DrawRectangleRecGradientH({ floor(fCurX + fKeyGap1 + m_fWhiteCX - fKeyGap + 0.5f), fCurY, fKeyGap, fTopCY + fNearCY },
+            rl::DrawRectangleRecGradientH(rl::AlignRectangle({ floor(fCurX + fKeyGap1 + m_fWhiteCX - fKeyGap + 0.5f), fCurY, fKeyGap, fTopCY + fNearCY }),
                 rl::IntToColor(m_csKBBackground.iVeryDarkRGB), rl::IntToColor(m_csKBBackground.iPrimaryRGB));
 
             fCurX += m_fWhiteCX;
@@ -1755,107 +1748,78 @@ void MainScreen::RenderBorder()
 
 void MainScreen::RenderText()
 {
-    int iLines = 1;
-    if ( m_bShowFPS ) iLines++;
-
-    // Screen info
-    RECT rcStatus = { rlc::GetBufferWidth() - 250, 0, rlc::GetBufferWidth(), 6 + 22 * iLines };
-
-    int iMsgCY = 200;
-    RECT rcMsg = { 0, static_cast< int >( rlc::GetBufferHeight() * ( 1.0f - KBPercent ) - iMsgCY ) / 2 };
-    rcMsg.right = rlc::GetBufferWidth();
-    rcMsg.bottom = rcMsg.top + iMsgCY;
-
-    // Draw the backgrounds
-    unsigned iBkgColor = 0x40000000;
-    rlc::DrawRect( static_cast< float >( rcStatus.left ), static_cast< float >( rcStatus.top ), 
-        static_cast< float >( rcStatus.right - rcStatus.left ), static_cast< float >( rcStatus.bottom - rcStatus.top ), 0x80000000 );
-    if ( m_bZoomMove )
-        rlc::DrawRect( static_cast< float >( rcMsg.left ), static_cast< float >( rcMsg.top ), 
-            static_cast< float >( rcMsg.right - rcMsg.left ), static_cast< float >( rcMsg.bottom - rcMsg.top ), iBkgColor );
-
+    right_text_height = 0;
     // Draw the text
-    //rlc::BeginText();
-
-    RenderStatus( &rcStatus );
-    if ( m_bZoomMove )
-        RenderMessage( &rcMsg, TEXT( "- Left-click and drag to move the screen\n- Right-click and drag to zoom horizontally\n- Press Escape to abort changes\n- Press Ctrl+V to save changes" ) );
-    
-    //rlc::EndText();
+    RenderStatus();
+    if (m_bZoomMove)
+        RenderMessage({
+            { "- Left-click and drag to move the screen" , rl::WHITE },
+            { "- Right-click and drag to zoom horizontally" , rl::WHITE },
+            { "- Press Escape to abort changes" , rl::WHITE },
+            { "- Press Ctrl+V to save changes" , rl::WHITE }
+        });
 }
 
-void MainScreen::RenderStatus( LPRECT prcStatus )
+void MainScreen::RenderStatus()
 {
+    std::vector<std::pair<std::string, rl::Color>> info_text;
     // Build the time text
     TCHAR sTime[128];
     char cTime[128];
     const MIDI::MIDIInfo &mInfo = m_MIDI.GetInfo();
     if ( m_llStartTime >= 0 )
-        _stprintf_s( sTime, TEXT( "%lld:%05.2lf / %lld:%05.2lf" ),
+        sprintf_s(cTime, "Time: %lld:%05.2lf / %lld:%05.2lf",
             m_llStartTime / 60000000, ( m_llStartTime % 60000000 ) / 1000000.0,
             mInfo.llTotalMicroSecs / 60000000, ( mInfo.llTotalMicroSecs % 60000000 ) / 1000000.0 );
     else
-        _stprintf_s( sTime, TEXT( "\t-%lld:%05.2lf / %lld:%05.2lf" ),
+        sprintf_s(cTime, "Time: -%lld:%05.2lf / %lld:%05.2lf",
             -m_llStartTime / 60000000, ( -m_llStartTime % 60000000 ) / 1000000.0,
             mInfo.llTotalMicroSecs / 60000000, ( mInfo.llTotalMicroSecs % 60000000 ) / 1000000.0 );
-    wcstombs(cTime, sTime, 128);
-    int cTime_measured = rl::MeasureText(cTime, 20);
 
     // Build the FPS text
-    TCHAR sFPS[128];
     char cFPS[128];
-    _stprintf_s( sFPS, TEXT( "%.2lf" ), m_dFPS );
-    wcstombs(cFPS, sFPS, 128);
-    int cFPS_measured = rl::MeasureText(cFPS, 20);
+    sprintf_s(cFPS, "FPS: %.2lf", m_dFPS);
 
-    // Display the text
-    InflateRect( prcStatus, -6, -3 );
-
-    OffsetRect( prcStatus, 2, 1 );
-    //rlc::DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
-    //rlc::DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
-    rl::DrawText("Time:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
-    rl::DrawText(cTime, (int)prcStatus->right - cTime_measured, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
-
-    OffsetRect( prcStatus, -2, -1 );
-    //rlc::DrawText( TEXT( "Time:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
-    //rlc::DrawText( sTime, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
-    rl::DrawText("Time:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
-    rl::DrawText(cTime, (int)prcStatus->right - cTime_measured, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
-    //rl::DrawFPS(69, 69);
-
-    //MessageBoxA(NULL, cTime, cFPS, 1);
+    // Add text
+    info_text.push_back({ cTime, rl::WHITE });
 
     if ( m_bShowFPS )
     {
-        OffsetRect( prcStatus, 2, 20 + 2 );
-        //rlc::DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFF404040 );
-        //rlc::DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFF404040 );
-        rl::DrawText("FPS:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
-        rl::DrawText(cFPS, (int)prcStatus->right - cFPS_measured, (int)prcStatus->top+1, 20, { 64, 64, 64, 255 });
-        OffsetRect( prcStatus, -2, -1 );
-        //rlc::DrawText( TEXT( "FPS:" ), Renderer::Small, prcStatus, 0, 0xFFFFFFFF );
-        //rlc::DrawText( sFPS, Renderer::Small, prcStatus, DT_RIGHT, 0xFFFFFFFF );
-        rl::DrawText("FPS:", (int)prcStatus->left, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
-        rl::DrawText(cFPS, (int)prcStatus->right - cFPS_measured, (int)prcStatus->top+1, 20, { 255, 255, 255, 255 });
+        info_text.push_back({ cFPS, rl::WHITE });
+    }
+
+    int max_w = 0;
+    for (const auto& t : info_text) {
+        int w = rl::MeasureText(t.first.c_str(), 20);
+        if (w > max_w)
+            max_w = w;
+    }
+
+    rl::DrawRectangle(0, 0, max_w + 16, info_text.size() * 22 + 6, { 0, 0, 0, 127 });
+    for (size_t i = 0; i < info_text.size(); i++) {
+        DrawText(info_text[i].first.c_str(), 10, 6+i*22, 20, rl::MultiplyColor(info_text[i].second, 0.25));
+        DrawText(info_text[i].first.c_str(), 8, 4+i*22, 20, info_text[i].second);
     }
 }
 
-void MainScreen::RenderMessage( LPRECT prcMsg, TCHAR *sMsg )
+void MainScreen::RenderMessage(std::vector<std::pair<std::string, rl::Color>> msg_text )
 {
-    RECT rcMsg = { 0 };
-    //Renderer::FontSize eFontSize = Renderer::Medium;
-    ////rlc::DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
+    int sw = rl::GetRenderWidth();
+    std::vector<int> text_widths;
+    int max_w = 0;
+    for (const auto& t : msg_text) {
+        int w = rl::MeasureText(t.first.c_str(), 20);
+        text_widths.push_back(w);
+        if (w > max_w)
+            max_w = w;
+    }
 
-    //if ( rcMsg.right > rlc::GetBufferWidth() )
-    //{
-    //    eFontSize = Renderer::Small;
-    //    //rlc::DrawText( sMsg, eFontSize, &rcMsg, DT_CALCRECT, 0xFF000000 );
-    //}
-    
-    OffsetRect( &rcMsg, 2 + prcMsg->left + ( prcMsg->right - prcMsg->left - rcMsg.right ) / 2,
-                2 + prcMsg->top + ( prcMsg->bottom - prcMsg->top - rcMsg.bottom ) / 2 );
-    //rlc::DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFF404040 );
-    OffsetRect( &rcMsg, -2, -2 );
-    //rlc::DrawText( sMsg, eFontSize, &rcMsg, 0, 0xFFFFFFFF );
+    int rect_height = msg_text.size() * 22 + 6;
+    rl::DrawRectangle(sw - max_w - 16, right_text_height, max_w + 16, rect_height, {0, 0, 0, 127});
+    for (size_t i = 0; i < msg_text.size(); i++) {
+        int tw = text_widths[i];
+        DrawText(msg_text[i].first.c_str(), sw-tw-6, right_text_height + 6+i*22, 20, rl::MultiplyColor(msg_text[i].second, 0.25));
+        DrawText(msg_text[i].first.c_str(), sw-tw-8, right_text_height + 4+i*22, 20, msg_text[i].second);
+    }
+    right_text_height += rect_height;
 }

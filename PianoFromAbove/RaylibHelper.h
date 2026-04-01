@@ -12,6 +12,8 @@ namespace rl
 	void DrawTriangleGradient(rl::Vector2 p1, rl::Vector2 p2, rl::Vector2 p3, rl::Color c1, rl::Color c2, rl::Color c3);
 	void DrawRectangleRecGradientH(rl::Rectangle rect, rl::Color left, rl::Color right);
 	void DrawRectangleRecGradientV(rl::Rectangle rect, rl::Color top, rl::Color bottom);
+	rl::Color MultiplyColor(rl::Color color, float factor);
+	rl::Color MultiplyAlpha(rl::Color color, float factor);
 }
 
 namespace rlc  // Whenever I'm lazy to rewrite the functions

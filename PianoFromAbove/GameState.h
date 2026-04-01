@@ -194,8 +194,8 @@ private:
     void RenderKeys();
     void RenderBorder();
     void RenderText();
-    void RenderStatus( LPRECT prcPos );
-    void RenderMessage( LPRECT prcMsg, TCHAR *sMsg );
+    void RenderStatus();
+    void RenderMessage(std::vector<std::pair<std::string, rl::Color>> msg_text);
 
     // MIDI info
     MIDI m_MIDI; // The song to display
@@ -248,6 +248,9 @@ private:
     float m_fTempZoomX, m_fTempOffsetX, m_fTempOffsetY;
     bool m_bZoomMove, m_bTrackPos, m_bTrackZoom;
     POINT m_ptStartZoom, m_ptLastPos;
+
+    // Meowing
+    int right_text_height;
 
     // Computed in RenderGlobal
     int m_iStartNote, m_iEndNote; // Start and end notes of the songs

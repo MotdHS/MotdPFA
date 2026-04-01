@@ -1,5 +1,6 @@
 #include <cmath>
 #include "RaylibHelper.h"
+#include <algorithm>
 
 rl::Color rl::IntToColor(unsigned int rgb_int)
 {
@@ -44,6 +45,26 @@ void rl::DrawRectangleRecGradientH(rl::Rectangle rect, rl::Color left, rl::Color
 void rl::DrawRectangleRecGradientV(rl::Rectangle rect, rl::Color top, rl::Color bottom)
 {
     rl::DrawRectangleGradientEx(rect, top, bottom, bottom, top);
+}
+
+rl::Color rl::MultiplyColor(rl::Color color, float factor)
+{
+    return {
+        static_cast<unsigned char>(std::clamp(std::round(color.r * factor), 0.0f, 255.0f)),
+        static_cast<unsigned char>(std::clamp(std::round(color.g * factor), 0.0f, 255.0f)),
+        static_cast<unsigned char>(std::clamp(std::round(color.b * factor), 0.0f, 255.0f)),
+        color.a
+    };
+}
+
+rl::Color rl::MultiplyAlpha(rl::Color color, float factor)
+{
+    return {
+        color.r,
+        color.g,
+        color.b,
+        static_cast<unsigned char>(std::clamp(std::round(color.a * factor), 0.0f, 255.0f))
+    };
 }
 
 void rl::SetLimitFPS(bool bLimitFPS)
